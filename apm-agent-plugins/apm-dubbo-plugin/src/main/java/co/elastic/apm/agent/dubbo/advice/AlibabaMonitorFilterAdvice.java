@@ -24,7 +24,7 @@ import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
 import com.alibaba.dubbo.rpc.Invocation;
@@ -46,7 +46,7 @@ public class AlibabaMonitorFilterAdvice {
         // for consumer side, just create span, more information will be collected in provider side
         AbstractSpan<?> active = tracer.getActive();
         if (context.isConsumerSide() && active != null) {
-            Span span = DubboTraceHelper.createConsumerSpan(tracer, invocation.getInvoker().getInterface(),
+            Span<?> span = DubboTraceHelper.createConsumerSpan(tracer, invocation.getInvoker().getInterface(),
                 invocation.getMethodName(), context.getRemoteAddress());
             if (span != null) {
                 span.propagateTraceContext(context, AlibabaDubboTextMapPropagator.INSTANCE);

@@ -22,7 +22,7 @@ import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 //import com.sun.jndi.ldap.Connection;
 //import com.sun.jndi.ldap.LdapResult;
 import net.bytebuddy.asm.Advice;
@@ -41,7 +41,7 @@ public class LdapClientAdvice { // TODO Rafael
 //            return null;
 //        }
 //
-//        Span span = parent.createExitSpan();
+//        Span<?> span = parent.createExitSpan();
 //        if (span == null) {
 //            return null;
 //        }
@@ -60,7 +60,7 @@ public class LdapClientAdvice { // TODO Rafael
 //
 //    @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class, inline = false)
 //    public static void onExit(@Advice.Enter @Nullable Object spanObj, @Nullable @Advice.Return LdapResult ldapResult, @Nullable @Advice.Thrown Throwable t) {
-//        Span span = (Span) spanObj;
+//        Span<?> span = (Span<?>) spanObj;
 //        if (span != null) {
 //            span.withOutcome((ldapResult != null && ldapResult.status == 0 /* LDAP_SUCCESS */) ? Outcome.SUCCESS : Outcome.FAILURE)
 //                .captureException(t)

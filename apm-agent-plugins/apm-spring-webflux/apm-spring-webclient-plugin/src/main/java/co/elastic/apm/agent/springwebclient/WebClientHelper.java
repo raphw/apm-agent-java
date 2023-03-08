@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.springwebclient;
 
 import co.elastic.apm.agent.impl.Tracer;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +35,13 @@ public class WebClientHelper {
 
     private static final Logger log = LoggerFactory.getLogger(WebClientHelper.class);
 
-    public static <T> Publisher<T> wrapSubscriber(Publisher<T> publisher, final Span span, final Tracer tracer) {
+    public static <T> Publisher<T> wrapSubscriber(Publisher<T> publisher, final Span<?> span, final Tracer tracer) {
 
         Function<? super Publisher<T>, ? extends Publisher<T>> lift = Operators.liftPublisher(
             new BiFunction<Publisher, CoreSubscriber<? super T>, CoreSubscriber<? super T>>() {
                 @Override
                 public CoreSubscriber<? super T> apply(Publisher publisher, CoreSubscriber<? super T> subscriber) {
-                    log.trace("Trying to subscribe with span {}", span);
+                    log.trace("Trying to subscribe with Span<?> {}", span);
                     if (tracer.getActive() == null) {
                         return subscriber;
                     }

@@ -20,7 +20,7 @@ package co.elastic.apm.agent.httpclient.v4.helper;
 
 import co.elastic.apm.agent.httpclient.HttpClientHelper;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.tracer.pooling.Recyclable;
 import org.apache.http.HttpException;
@@ -43,7 +43,7 @@ class HttpAsyncRequestProducerWrapper implements HttpAsyncRequestProducer, Recyc
     private AbstractSpan<?> parent;
 
     @Nullable
-    private Span span;
+    private Span<?> span;
 
     HttpAsyncRequestProducerWrapper(ApacheHttpAsyncClientHelper helper) {
         this.asyncClientHelper = helper;
@@ -51,17 +51,17 @@ class HttpAsyncRequestProducerWrapper implements HttpAsyncRequestProducer, Recyc
 
     /**
      * Called in order to wrap the provided {@link HttpAsyncRequestProducer} with our wrapper that is capable of
-     * populating the HTTP span with data and ending it, as well as propagating the trace context through the
+     * populating the HTTP Span<?> with data and ending it, as well as propagating the trace context through the
      * generated request.
      * If the {@code span} is not {@code null}, it will be used for trace context propagation. Otherwise, the
      * {@code parent} will be used instead.
      *
      * @param delegate     the original {@link HttpAsyncRequestProducer}
-     * @param span         the HTTP span corresponding the given {@link HttpAsyncRequestProducer}
-     * @param parent       the active span when this method is called
+     * @param Span<?>         the HTTP Span<?> corresponding the given {@link HttpAsyncRequestProducer}
+     * @param parent       the active Span<?> when this method is called
      * @return the {@link HttpAsyncRequestProducer} wrapper
      */
-    public HttpAsyncRequestProducerWrapper with(HttpAsyncRequestProducer delegate, @Nullable Span span,
+    public HttpAsyncRequestProducerWrapper with(HttpAsyncRequestProducer delegate, @Nullable Span<?> span,
                                                 @Nullable AbstractSpan<?> parent) {
         // Order is important due to visibility - write to delegate last on this (initiating) thread
         this.span = span;
@@ -81,7 +81,7 @@ class HttpAsyncRequestProducerWrapper implements HttpAsyncRequestProducer, Recyc
 
     @Override
     public HttpRequest generateRequest() throws IOException, HttpException {
-        // first read the volatile, span and parent will become visible as a result
+        // first read the volatile, Span<?> and parent will become visible as a result
         HttpRequest request = delegate.generateRequest();
 
         // trace context propagation
@@ -109,7 +109,7 @@ class HttpAsyncRequestProducerWrapper implements HttpAsyncRequestProducer, Recyc
             parent = null;
         }
 
-        // HTTP span details
+        // HTTP Span<?> details
         if (span != null) {
             HttpHost host = getTarget();
             //noinspection ConstantConditions

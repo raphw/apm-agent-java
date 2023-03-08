@@ -22,10 +22,10 @@ import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.context.Message;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
+import co.elastic.apm.agent.tracer.metadata.Message;
 
 import javax.annotation.Nullable;
 import java.util.Date;

@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.grpc;
 
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.sdk.DynamicTransformer;
 import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
 import io.grpc.ClientCall;
@@ -42,8 +42,8 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * <br>
  * full call lifecycle is split in few sub-implementations:
  * <ul>
- *     <li>{@link Start} for client span start</li>
- *     <li>{@link ClientCallListenerInstrumentation.Close} for {@link ClientCall.Listener#onClose} for client span end</li>
+ *     <li>{@link Start} for client Span<?> start</li>
+ *     <li>{@link ClientCallListenerInstrumentation.Close} for {@link ClientCall.Listener#onClose} for client Span<?> end</li>
  *     <li>{@link ClientCallListenerInstrumentation.OtherListenerMethod} for other methods of {@link ClientCall.Listener}.
  * </ul>
  */
@@ -96,13 +96,13 @@ public abstract class ClientCallImplInstrumentation extends BaseInstrumentation 
                                       @Advice.Thrown @Nullable Throwable thrown,
                                       @Advice.Enter @Nullable Object span) {
 
-                GrpcHelper.getInstance().clientCallStartExit((Span) span, listener, thrown);
+                GrpcHelper.getInstance().clientCallStartExit((Span<?>) span, listener, thrown);
             }
         }
     }
 
     /**
-     * Instruments {@link ClientCall#cancel} to end client call span upon cancellation
+     * Instruments {@link ClientCall#cancel} to end client call Span<?> upon cancellation
      */
     public static class Cancel extends ClientCallImplInstrumentation {
 

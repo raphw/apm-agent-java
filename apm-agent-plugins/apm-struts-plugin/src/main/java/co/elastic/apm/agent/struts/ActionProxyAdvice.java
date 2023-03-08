@@ -21,7 +21,7 @@ package co.elastic.apm.agent.struts;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.util.TransactionNameUtils;
 import com.opensymphony.xwork2.ActionContext;
@@ -44,7 +44,7 @@ public class ActionProxyAdvice {
         String className = actionProxy.getAction().getClass().getSimpleName();
         String methodName = actionProxy.getMethod();
         if (ActionContext.getContext().get("CHAIN_HISTORY") != null) {
-            Span span = transaction.createSpan().withType("app").withSubtype("internal");
+            Span<?> span = transaction.createSpan().withType("app").withSubtype("internal");
             TransactionNameUtils.setNameFromClassAndMethod(className, methodName, span.getAndOverrideName(PRIO_HIGH_LEVEL_FRAMEWORK));
             return span.activate();
         } else {
@@ -61,7 +61,7 @@ public class ActionProxyAdvice {
             return;
         }
 
-        Span span = (Span) spanOrNull;
+        Span<?> span = (Span<?>) spanOrNull;
         try {
             if (t != null) {
                 span.captureException(t).withOutcome(Outcome.FAILURE);

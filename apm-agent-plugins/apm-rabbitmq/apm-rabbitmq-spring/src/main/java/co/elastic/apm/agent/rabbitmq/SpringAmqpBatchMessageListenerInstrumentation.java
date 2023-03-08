@@ -89,7 +89,7 @@ public class SpringAmqpBatchMessageListenerInstrumentation extends SpringBaseIns
                             .activate();
                     }
                 } else {
-                    oneTimeTransactionCreationWarningLogger.warn("Unexpected active span during batch message processing start: {}",
+                    oneTimeTransactionCreationWarningLogger.warn("Unexpected active Span<?> during batch message processing start: {}",
                         active);
                 }
 

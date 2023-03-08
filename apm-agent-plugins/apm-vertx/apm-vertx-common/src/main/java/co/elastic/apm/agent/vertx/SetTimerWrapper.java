@@ -47,7 +47,7 @@ public class SetTimerWrapper extends GenericHandlerWrapper<Long> {
     public static Handler<Long> wrapTimerIfActiveSpan(Handler<Long> handler) {
         AbstractSpan<?> currentSpan = GlobalTracer.get().require(Tracer.class).getActive();
 
-        // do not wrap if there is no parent span or if we are in the recursive context of the same type of timer
+        // do not wrap if there is no parent Span<?> or if we are in the recursive context of the same type of timer
         if (currentSpan != null && !handler.getClass().getName().equals(activeTimerHandlerPerThread.get())) {
             handler = new SetTimerWrapper(currentSpan, handler);
         }

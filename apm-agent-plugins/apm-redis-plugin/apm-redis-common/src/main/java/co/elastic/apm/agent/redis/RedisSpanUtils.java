@@ -21,19 +21,19 @@ package co.elastic.apm.agent.redis;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 
 import javax.annotation.Nullable;
 
 public class RedisSpanUtils {
     @Nullable
-    public static Span createRedisSpan(String command) {
+    public static Span<?> createRedisSpan(String command) {
         AbstractSpan<?> activeSpan = GlobalTracer.get().require(Tracer.class).getActive();
         if (activeSpan == null) {
             return null;
         }
 
-        Span span = activeSpan.createExitSpan();
+        Span<?> span = activeSpan.createExitSpan();
         if (span == null) {
             return null;
         }

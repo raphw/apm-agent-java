@@ -89,7 +89,7 @@ public class JakartaApmAsyncListener implements AsyncListener, Recyclable {
             According to the Servlet 3 specification
             (http://download.oracle.com/otn-pub/jcp/servlet-3.0-fr-eval-oth-JSpec/servlet-3_0-final-spec.pdf, section 2.3.3.3),
             onComplete() should always be called by the container even in the case of timeout or error, and the final
-            HTTP status code should be set by then. So we'll just defer to onComplete() for finalizing the span and do
+            HTTP status code should be set by then. So we'll just defer to onComplete() for finalizing the Span<?> and do
             nothing here.
 
             But JBoss EAP 6 is a special one...
@@ -109,7 +109,7 @@ public class JakartaApmAsyncListener implements AsyncListener, Recyclable {
             According to the Servlet 3 specification
             (http://download.oracle.com/otn-pub/jcp/servlet-3.0-fr-eval-oth-JSpec/servlet-3_0-final-spec.pdf, section 2.3.3.3),
             onComplete() should always be called by the container even in the case of timeout or error, and the final
-            HTTP status code should be set by then. So we'll just defer to onComplete() for finalizing the span and do
+            HTTP status code should be set by then. So we'll just defer to onComplete() for finalizing the Span<?> and do
             nothing here.
 
             But JBoss EAP 6 is a special one...

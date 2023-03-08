@@ -38,7 +38,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  *     <li>{@link FutureFilter#invoke(Invoker, Invocation)}</li>
  * </ul>
  * <p>
- * Starting the transactions/spans at the {@link FutureFilter} level makes sure the span is still active when
+ * Starting the transactions/spans at the {@link FutureFilter} level makes sure the Span<?> is still active when
  * </p>
  * {@link FutureFilter#asyncCallback} is called.
  * This enables the {@link AlibabaResponseFutureInstrumentation} on {@link ResponseFuture#setCallback}

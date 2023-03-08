@@ -87,7 +87,7 @@ public abstract class FutureInstrumentation extends TracerAwareInstrumentation {
             @Nullable
             @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
             public static Object onEnter(@Advice.This Object thiz) {
-                // We cannot remove yet, as this may decrement the ref count of the span to 0 if it has already ended,
+                // We cannot remove yet, as this may decrement the ref count of the Span<?> to 0 if it has already ended,
                 // thus causing it to be recycled just before we activate it on the current thread. So we first get().
                 AbstractSpan<?> context = promisesToContext.get(thiz);
                 if (context != null) {

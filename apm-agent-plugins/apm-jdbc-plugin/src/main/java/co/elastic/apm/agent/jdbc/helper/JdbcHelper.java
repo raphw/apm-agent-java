@@ -21,7 +21,7 @@ package co.elastic.apm.agent.jdbc.helper;
 import co.elastic.apm.agent.db.signature.Scanner;
 import co.elastic.apm.agent.db.signature.SignatureParser;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.jdbc.JdbcFilter;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -81,12 +81,12 @@ public class JdbcHelper {
 
 
     @Nullable
-    public Span createJdbcSpan(@Nullable String sql, Object statement, @Nullable AbstractSpan<?> parent, boolean preparedStatement) {
+    public Span<?> createJdbcSpan(@Nullable String sql, Object statement, @Nullable AbstractSpan<?> parent, boolean preparedStatement) {
         if (!(statement instanceof Statement) || sql == null || isAlreadyMonitored(parent) || parent == null) {
             return null;
         }
 
-        Span span = parent.createExitSpan();
+        Span<?> span = parent.createExitSpan();
         if (span == null) {
             return null;
         } else {
@@ -104,7 +104,7 @@ public class JdbcHelper {
         // setting the type here is important
         // getting the meta data can result in another jdbc call
         // if that is traced as well -> StackOverflowError
-        // to work around that, isAlreadyMonitored checks if the parent span is a db span and ignores them
+        // to work around that, isAlreadyMonitored checks if the parent Span<?> is a db Span<?> and ignores them
         span.withType(DB_SPAN_TYPE);
 
         // write fields that do not rely on metadata
@@ -141,12 +141,12 @@ public class JdbcHelper {
      * we only record each JDBC call once.
      */
     private boolean isAlreadyMonitored(@Nullable AbstractSpan<?> parent) {
-        if (!(parent instanceof Span)) {
+        if (!(parent instanceof Span<?>)) {
             return false;
         }
-        Span parentSpan = (Span) parent;
-        // a db span can't be the child of another db span
-        // this means the span has already been created for this db call
+        Span<?> parentSpan = (Span<?>) parent;
+        // a db Span<?> can't be the child of another db span
+        // this means the Span<?> has already been created for this db call
         return parentSpan.getType() != null && parentSpan.getType().equals(DB_SPAN_TYPE);
     }
 

@@ -83,7 +83,7 @@ public class GreetingFunctional {
             .GET("/functional/custom-transaction-name", accept(MediaType.TEXT_PLAIN), request -> {
                 ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
                 Transaction transaction = Objects.requireNonNull(tracer.currentTransaction(), "active transaction is required");
-                // This mimics setting the name through the public API. We cannot use the public API if we want to test span recycling
+                // This mimics setting the name through the public API. We cannot use the public API if we want to test Span<?> recycling
                 transaction.withName("user-provided-name", AbstractSpan.PRIO_USER_SUPPLIED);
                 return response(greetingHandler.helloMessage("transaction=" + Objects.requireNonNull(tracer.currentTransaction()).getTraceContext().getId()));
             })

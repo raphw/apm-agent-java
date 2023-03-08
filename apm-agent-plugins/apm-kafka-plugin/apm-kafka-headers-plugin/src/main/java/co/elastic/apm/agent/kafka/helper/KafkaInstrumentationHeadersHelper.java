@@ -19,9 +19,9 @@
 package co.elastic.apm.agent.kafka.helper;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -84,7 +84,7 @@ public class KafkaInstrumentationHeadersHelper {
 
     /**
      * Checks whether the provided iterable should be wrapped.
-     * If there is an active span when this method is invoked, span links are added to it based non the provided {@link ConsumerRecords}
+     * If there is an active Span<?> when this method is invoked, Span<?> links are added to it based non the provided {@link ConsumerRecords}
      * and this method returns {@code false}.
      * @param consumerRecords the {@link ConsumerRecords} object from which this method is invoked when trying to obtain an iterable
      * @param iterable the original iterable object returned by the instrumented method
@@ -104,15 +104,11 @@ public class KafkaInstrumentationHeadersHelper {
 
     public void addSpanLinks(@Nullable ConsumerRecords<?, ?> records, AbstractSpan<?> span) {
         if (records != null && !records.isEmpty()) {
-            // Avoid stack overflow by trying to re-wrap and avoid adding span links for this iteration
+            // Avoid stack overflow by trying to re-wrap and avoid adding Span<?> links for this iteration
             wrappingDisabled.set(Boolean.TRUE);
             try {
                 for (ConsumerRecord<?, ?> record : records) {
-                    span.addSpanLink(
-                        TraceContext.<ConsumerRecord>getFromTraceContextBinaryHeaders(),
-                        KafkaRecordHeaderAccessor.instance(),
-                        record
-                    );
+                    span.addLink(KafkaRecordHeaderAccessor.instance(), record);
                 }
             } finally {
                 wrappingDisabled.set(false);
@@ -120,7 +116,7 @@ public class KafkaInstrumentationHeadersHelper {
         }
     }
 
-    public void setOutgoingTraceContextHeaders(Span span, ProducerRecord<?, ?> producerRecord) {
+    public void setOutgoingTraceContextHeaders(Span<?> span, ProducerRecord<?, ?> producerRecord) {
         span.propagateTraceContext(producerRecord, KafkaRecordHeaderAccessor.instance());
     }
 

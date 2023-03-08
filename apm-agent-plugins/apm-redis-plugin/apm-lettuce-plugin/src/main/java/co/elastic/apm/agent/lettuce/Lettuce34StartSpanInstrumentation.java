@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.lettuce;
 
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.redis.RedisSpanUtils;
 import com.lambdaworks.redis.protocol.RedisCommand;
 import net.bytebuddy.asm.Advice;
@@ -34,7 +34,7 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 /**
- * Starts a span in {@link com.lambdaworks.redis.RedisChannelHandler#dispatch}
+ * Starts a Span<?> in {@link com.lambdaworks.redis.RedisChannelHandler#dispatch}
  *
  * The context will be propagated via the Netty instrumentation
  */
@@ -57,7 +57,7 @@ public class Lettuce34StartSpanInstrumentation extends Lettuce34Instrumentation 
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
         public static Object beforeDispatch(@Nullable @Advice.Argument(0) RedisCommand<?, ?, ?> command) {
             if (command != null) {
-                Span span = RedisSpanUtils.createRedisSpan(command.getType().toString());
+                Span<?> span = RedisSpanUtils.createRedisSpan(command.getType().toString());
                 if (span != null) {
                     commandToSpan.put(command, span);
                     return span;
@@ -68,7 +68,7 @@ public class Lettuce34StartSpanInstrumentation extends Lettuce34Instrumentation 
 
         @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
         public static void afterDispatch(@Nullable @Advice.Enter Object spanObj) {
-            Span span = (Span) spanObj;
+            Span<?> span = (Span<?>) spanObj;
             if (span != null) {
                 span.deactivate();
             }

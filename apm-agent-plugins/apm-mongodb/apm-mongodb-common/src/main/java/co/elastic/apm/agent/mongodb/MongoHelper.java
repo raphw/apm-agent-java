@@ -21,7 +21,7 @@ package co.elastic.apm.agent.mongodb;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -42,8 +42,8 @@ public class MongoHelper {
         this.config = tracer.getConfig(MongoConfiguration.class);
     }
 
-    public Span startSpan(@Nullable String database, @Nullable String collection, @Nullable String command, String host, int port, @Nullable BsonDocument commandDocument) {
-        Span span = null;
+    public Span<?> startSpan(@Nullable String database, @Nullable String collection, @Nullable String command, String host, int port, @Nullable BsonDocument commandDocument) {
+        Span<?> span = null;
         final AbstractSpan<?> activeSpan = tracer.getActive();
         if (activeSpan != null) {
             span = activeSpan.createExitSpan();

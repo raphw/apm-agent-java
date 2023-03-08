@@ -21,8 +21,8 @@ package co.elastic.apm.agent.jms;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.AbstractSpan;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
@@ -96,7 +96,7 @@ public class JmsInstrumentationHelper {
 
     @SuppressWarnings("Duplicates")
     @Nullable
-    public Span startJmsSendSpan(Destination destination, Message message) {
+    public Span<?> startJmsSendSpan(Destination destination, Message message) {
 
         final AbstractSpan<?> activeSpan = tracer.getActive();
         if (activeSpan == null) {
@@ -113,7 +113,7 @@ public class JmsInstrumentationHelper {
             return null;
         }
 
-        Span span = activeSpan.createExitSpan();
+        Span<?> span = activeSpan.createExitSpan();
 
         if (span == null) {
             return null;
@@ -244,7 +244,7 @@ public class JmsInstrumentationHelper {
             return;
         }
         try {
-            co.elastic.apm.agent.impl.context.Message messageContext = span.getContext().getMessage();
+            co.elastic.apm.agent.tracer.metadata.Message messageContext = span.getContext().getMessage();
 
             // Currently only capturing body of TextMessages. The javax.jms.Message#getBody() API is since 2.0, so,
             // if we are supporting JMS 1.1, it makes no sense to rely on isAssignableFrom.

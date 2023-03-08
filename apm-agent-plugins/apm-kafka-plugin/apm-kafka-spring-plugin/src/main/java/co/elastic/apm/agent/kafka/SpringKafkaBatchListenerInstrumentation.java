@@ -39,7 +39,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
  * 1. Iterate over all Messages and store them in a List
  * 2. Pass the list to the registered batch KafkaListener
  * <p>
- * In order to catch both operations in a single transaction with span links,
+ * In order to catch both operations in a single transaction with Span<?> links,
  * this instrumentation creates a transaction which spans both of the actions listed above.
  * <p>
  * This instrumentation instruments {@link org.springframework.kafka.listener.KafkaMessageListenerContainer.ListenerConsumer#invokeBatchListener(org.apache.kafka.clients.consumer.ConsumerRecords)}.
@@ -85,7 +85,7 @@ public class SpringKafkaBatchListenerInstrumentation extends BaseKafkaInstrument
             } else {
                 oneTimeTransactionCreationWarningLogger.warn("Failed to start Spring Kafka transaction for batch processing");
             }
-            //we don't need to add span links here, they will be added by the KafkaConsumerRecordsInstrumentation
+            //we don't need to add Span<?> links here, they will be added by the KafkaConsumerRecordsInstrumentation
             return transaction;
         }
 

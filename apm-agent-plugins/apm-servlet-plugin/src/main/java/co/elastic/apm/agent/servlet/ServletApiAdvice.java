@@ -25,7 +25,7 @@ import co.elastic.apm.agent.impl.context.Request;
 import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.sdk.state.GlobalVariables;
 import co.elastic.apm.agent.sdk.weakconcurrent.DetachedThreadLocal;
@@ -172,13 +172,13 @@ public abstract class ServletApiAdvice {
         }
         Transaction transaction = null;
         Scope scope = null;
-        Span span = null;
+        Span<?> span = null;
         if (transactionOrScopeOrSpan instanceof Transaction) {
             transaction = (Transaction) transactionOrScopeOrSpan;
         } else if (transactionOrScopeOrSpan instanceof Scope) {
             scope = (Scope) transactionOrScopeOrSpan;
-        } else if (transactionOrScopeOrSpan instanceof Span) {
-            span = (Span) transactionOrScopeOrSpan;
+        } else if (transactionOrScopeOrSpan instanceof Span<?>) {
+            span = (Span<?>) transactionOrScopeOrSpan;
         }
 
         excluded.remove();

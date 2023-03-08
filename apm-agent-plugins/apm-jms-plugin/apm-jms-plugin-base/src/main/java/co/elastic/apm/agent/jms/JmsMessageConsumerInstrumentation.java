@@ -20,7 +20,7 @@ package co.elastic.apm.agent.jms;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
@@ -111,8 +111,8 @@ public abstract class JmsMessageConsumerInstrumentation extends BaseJmsInstrumen
                         } else {
                             createPollingSpan = true;
                         }
-                    } else if (parent instanceof Span) {
-                        Span parentSpan = (Span) parent;
+                    } else if (parent instanceof Span<?>) {
+                        Span<?> parentSpan = (Span<?>) parent;
                         if (MESSAGING_TYPE.equals(parentSpan.getType()) && "receive".equals(parentSpan.getAction())) {
                             // Avoid duplication for nested calls
                             return null;

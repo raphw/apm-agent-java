@@ -23,7 +23,7 @@ import co.elastic.apm.agent.awssdk.v1.helper.sqs.wrapper.ReceiveMessageResultWra
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.tracer.dispatch.TextHeaderSetter;
@@ -57,7 +57,7 @@ public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, Exec
     }
 
 
-    public void propagateContext(Span span, AmazonWebServiceRequest request) {
+    public void propagateContext(Span<?> span, AmazonWebServiceRequest request) {
         if (request instanceof SendMessageRequest) {
             SendMessageRequest sendMessageRequest = (SendMessageRequest) request;
             span.propagateTraceContext(sendMessageRequest.getMessageAttributes(), this);
@@ -127,7 +127,7 @@ public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, Exec
     }
 
     @Override
-    protected void setMessageContext(@Nullable Message sqsMessage, @Nullable String queueName, co.elastic.apm.agent.impl.context.Message message) {
+    protected void setMessageContext(@Nullable Message sqsMessage, @Nullable String queueName, co.elastic.apm.agent.tracer.metadata.Message message) {
         if (queueName != null) {
             message.withQueue(queueName);
         }
@@ -157,22 +157,22 @@ public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, Exec
     }
 
     /**
-     * Enrich the span if there is already an active SQS span that has been started through dedicated instrumentation.
+     * Enrich the Span<?> if there is already an active SQS Span<?> that has been started through dedicated instrumentation.
      * Otherwise, create and start a new span.
      *
-     * @return Returns the span object if a new span has been created. Returns null if an active span has been enriched or span could not be created.
+     * @return Returns the Span<?> object if a new Span<?> has been created. Returns null if an active Span<?> has been enriched or Span<?> could not be created.
      */
     @Nullable
     @Override
-    public Span startSpan(Request<?> request, URI httpURI, ExecutionContext context) {
+    public Span<?> startSpan(Request<?> request, URI httpURI, ExecutionContext context) {
         if (isAlreadyActive(request)) {
-            Span activeSpan = tracer.getActiveExitSpan();
+            Span<?> activeSpan = tracer.getActiveExitSpan();
             if (activeSpan != null && SQS_TYPE.equals(activeSpan.getSubtype())) {
                 enrichSpan(activeSpan, request, request.getEndpoint(), context);
                 activeSpan.withSync(isRequestSync(request.getOriginalRequest()));
             }
         } else {
-            Span span = super.startSpan(request, request.getEndpoint(), context);
+            Span<?> span = super.startSpan(request, request.getEndpoint(), context);
             if (span != null) {
                 span.withSync(isRequestSync(request.getOriginalRequest()));
                 return span;

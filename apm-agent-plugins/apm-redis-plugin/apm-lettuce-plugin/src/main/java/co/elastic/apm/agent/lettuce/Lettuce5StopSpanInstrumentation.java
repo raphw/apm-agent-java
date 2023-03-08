@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.lettuce;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import io.lettuce.core.protocol.RedisCommand;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.NamedElement;
@@ -40,7 +40,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 /**
- * Stops the span created by {@link Lettuce5StartSpanInstrumentation} when one of the following methods are called:
+ * Stops the Span<?> created by {@link Lettuce5StartSpanInstrumentation} when one of the following methods are called:
  * <ul>
  *     <li>{@link RedisCommand#complete()}</li>
  *     <li>{@link RedisCommand#completeExceptionally(Throwable)}</li>
@@ -72,7 +72,7 @@ public abstract class Lettuce5StopSpanInstrumentation extends TracerAwareInstrum
             @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
             public static void beforeComplete(@Advice.This RedisCommand<?, ?, ?> command) {
                 if (!command.isDone() && !command.isCancelled()) {
-                    Span span = Lettuce5StartSpanInstrumentation.commandToSpan.remove(command);
+                    Span<?> span = Lettuce5StartSpanInstrumentation.commandToSpan.remove(command);
                     if (span != null) {
                         logger.debug("Command#complete");
                         span.end();
@@ -93,7 +93,7 @@ public abstract class Lettuce5StopSpanInstrumentation extends TracerAwareInstrum
             @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
             public static void beforeComplete(@Advice.This RedisCommand<?, ?, ?> command, @Advice.Argument(0) Throwable throwable) {
                 if (!command.isDone() && !command.isCancelled()) {
-                    Span span = Lettuce5StartSpanInstrumentation.commandToSpan.remove(command);
+                    Span<?> span = Lettuce5StartSpanInstrumentation.commandToSpan.remove(command);
                     if (span != null) {
                         logger.debug("Command#completeExceptionally");
                         span.captureException(throwable).end();
@@ -114,7 +114,7 @@ public abstract class Lettuce5StopSpanInstrumentation extends TracerAwareInstrum
             @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
             public static void beforeComplete(@Advice.This RedisCommand<?, ?, ?> command) {
                 if (!command.isDone() && !command.isCancelled()) {
-                    Span span = commandToSpan.remove(command);
+                    Span<?> span = commandToSpan.remove(command);
                     if (span != null) {
                         logger.debug("Command#cancel");
                         span.end();

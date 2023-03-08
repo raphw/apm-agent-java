@@ -21,7 +21,7 @@ package co.elastic.apm.agent.process;
 import co.elastic.apm.agent.collections.WeakConcurrentProviderImpl;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.sdk.state.GlobalVariables;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakMap;
 
@@ -34,19 +34,19 @@ import java.util.List;
  */
 class ProcessHelper {
 
-    private static final ProcessHelper INSTANCE = new ProcessHelper(WeakConcurrentProviderImpl.<Process, Span>createWeakSpanMap());
+    private static final ProcessHelper INSTANCE = new ProcessHelper(WeakConcurrentProviderImpl.<Process, Span<?>>createWeakSpanMap());
 
     /**
      * A thread local used to indicate whether the currently invoked instrumented method is invoked by the plugin itself.
-     * More concretely - some span termination routes attempt to invoke {@link Process#exitValue()}, which is itself
+     * More concretely - some Span<?> termination routes attempt to invoke {@link Process#exitValue()}, which is itself
      * instrumented in order to detect process termination. When this method is invoked by the plugin itself, we want to
      * avoid applying its instrumentation logic.
      */
     private static final ThreadLocal<Boolean> inTracingContext = GlobalVariables.get(ProcessHelper.class, "inTracingContext", new ThreadLocal<Boolean>());
 
-    private final WeakMap<Process, Span> inFlightSpans;
+    private final WeakMap<Process, Span<?>> inFlightSpans;
 
-    ProcessHelper(WeakMap<Process, Span> inFlightSpans) {
+    ProcessHelper(WeakMap<Process, Span<?>> inFlightSpans) {
         this.inFlightSpans = inFlightSpans;
     }
 
@@ -80,12 +80,12 @@ class ProcessHelper {
 
         String binaryName = getBinaryName(processName);
 
-        Span span = parentContext.createSpan()
+        Span<?> span = parentContext.createSpan()
             .withType("process")
             .withName(binaryName);
 
-        // We don't require span to be activated as the background process is not really linked to current thread
-        // and there won't be any child span linked to process span
+        // We don't require Span<?> to be activated as the background process is not really linked to current thread
+        // and there won't be any child Span<?> linked to process span
 
         inFlightSpans.put(process, span);
     }
@@ -99,12 +99,12 @@ class ProcessHelper {
      * Ends process span
      *
      * @param process                process that is being terminated
-     * @param checkTerminatedProcess if {@code true}, will only terminate span if process is actually terminated, will
-     *                               unconditionally terminate process span otherwise
+     * @param checkTerminatedProcess if {@code true}, will only terminate Span<?> if process is actually terminated, will
+     *                               unconditionally terminate process Span<?> otherwise
      */
     void doEndProcess(Process process, boolean checkTerminatedProcess) {
 
-        Span span = inFlightSpans.get(process);
+        Span<?> span = inFlightSpans.get(process);
         if (span == null) {
             return;
         }
@@ -136,7 +136,7 @@ class ProcessHelper {
     }
 
     /**
-     * Can be used to end the span corresponding the provided {@link Process} when the exit value is already known
+     * Can be used to end the Span<?> corresponding the provided {@link Process} when the exit value is already known
      * @param process       process that is being terminated
      * @param exitValue     exit value of the terminated process
      */
@@ -145,7 +145,7 @@ class ProcessHelper {
     }
 
     private void removeAndEndSpan(Process process, Outcome outcome) {
-        Span span = inFlightSpans.remove(process);
+        Span<?> span = inFlightSpans.remove(process);
         if (span != null) {
             span.withOutcome(outcome).
                 end();

@@ -19,8 +19,8 @@
 package co.elastic.apm.agent.esrestclient;
 
 import co.elastic.apm.agent.impl.Tracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.AbstractSpan;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.tracer.pooling.Recyclable;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
@@ -36,7 +36,7 @@ public class ResponseListenerWrapper implements ResponseListener, Recyclable {
     private ResponseListener delegate;
 
     /**
-     * When {@literal true}, the context object is a client span that needs to be ended on completion, when {@literal false}
+     * When {@literal true}, the context object is a client Span<?> that needs to be ended on completion, when {@literal false}
      * it means that only context-propagation (aka activation/deactivation) is required.
      */
     private boolean isClientSpan;
@@ -49,8 +49,8 @@ public class ResponseListenerWrapper implements ResponseListener, Recyclable {
         this.tracer = tracer;
     }
 
-    ResponseListenerWrapper withClientSpan(ResponseListener delegate, Span span) {
-        // Order is important due to visibility - write to span last on this (initiating) thread
+    ResponseListenerWrapper withClientSpan(ResponseListener delegate, Span<?> span) {
+        // Order is important due to visibility - write to Span<?> last on this (initiating) thread
         this.delegate = delegate;
         this.isClientSpan = true;
         this.context = span;
@@ -58,7 +58,7 @@ public class ResponseListenerWrapper implements ResponseListener, Recyclable {
     }
 
     ResponseListenerWrapper withContextPropagation(ResponseListener delegate, AbstractSpan<?> context) {
-        // Order is important due to visibility - write to span last on this (initiating) thread
+        // Order is important due to visibility - write to Span<?> last on this (initiating) thread
         this.delegate = delegate;
         this.isClientSpan = false;
         this.context = context;
@@ -142,10 +142,10 @@ public class ResponseListenerWrapper implements ResponseListener, Recyclable {
     }
 
     private void finishClientSpan(@Nullable Response response, @Nullable Throwable throwable) {
-        // First read volatile span to ensure visibility on executing thread
+        // First read volatile Span<?> to ensure visibility on executing thread
         AbstractSpan<?> localSpan = context;
-        if (localSpan instanceof Span) {
-            helper.finishClientSpan(response, (Span) localSpan, throwable);
+        if (localSpan instanceof Span<?>) {
+            helper.finishClientSpan(response, (Span<?>) localSpan, throwable);
         }
     }
 

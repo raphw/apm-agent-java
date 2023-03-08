@@ -34,7 +34,7 @@ import static net.bytebuddy.matcher.ElementMatchers.isOverriddenFrom;
 import static net.bytebuddy.matcher.ElementMatchers.named;
 
 /**
- * Can't get the span from the {@link com.alibaba.dubbo.rpc.RpcContext} as it is reset already.
+ * Can't get the Span<?> from the {@link com.alibaba.dubbo.rpc.RpcContext} as it is reset already.
  * Therefore, the {@link ResponseCallback} is mapped to the {@link AbstractSpan} in {@link AlibabaResponseFutureInstrumentation}
  */
 public abstract class AlibabaResponseCallbackInstrumentation extends AbstractAlibabaDubboInstrumentation {

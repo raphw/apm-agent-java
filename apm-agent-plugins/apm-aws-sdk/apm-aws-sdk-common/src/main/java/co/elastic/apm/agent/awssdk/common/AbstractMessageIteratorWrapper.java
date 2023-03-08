@@ -20,7 +20,7 @@ package co.elastic.apm.agent.awssdk.common;
 
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.transaction.Span;
+import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.tracer.dispatch.TextHeaderGetter;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public abstract class AbstractMessageIteratorWrapper<Message> implements Iterato
     }
 
     public void endMessageProcessingSpan() {
-        Span span = tracer.getActiveSpan();
+        Span<?> span = tracer.getActiveSpan();
 
         if (span != null
             && span.getType() != null && span.getType().equals(MESSAGING_TYPE)
