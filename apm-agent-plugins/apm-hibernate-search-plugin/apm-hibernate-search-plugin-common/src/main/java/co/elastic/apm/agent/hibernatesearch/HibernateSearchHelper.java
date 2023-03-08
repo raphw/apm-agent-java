@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.hibernatesearch;
 
 import co.elastic.apm.agent.impl.Tracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 
 public final class HibernateSearchHelper {

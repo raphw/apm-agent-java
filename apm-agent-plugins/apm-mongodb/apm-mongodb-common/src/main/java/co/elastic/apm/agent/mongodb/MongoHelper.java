@@ -20,7 +20,7 @@ package co.elastic.apm.agent.mongodb;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -71,7 +71,7 @@ public class MongoHelper {
             .withInstance(database)
             .withStatement(statement);
 
-        StringBuilder name = span.getAndOverrideName(AbstractSpan.PRIO_DEFAULT);
+        StringBuilder name = span.getAndOverrideName(co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_DEFAULT);
         if (name != null) {
             appendToName(name, database);
             appendToName(name, collection);

@@ -21,7 +21,7 @@ package co.elastic.apm.agent.loginstr.correlation;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.error.ErrorCapture;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 
 import javax.annotation.Nullable;
 import java.util.AbstractMap;

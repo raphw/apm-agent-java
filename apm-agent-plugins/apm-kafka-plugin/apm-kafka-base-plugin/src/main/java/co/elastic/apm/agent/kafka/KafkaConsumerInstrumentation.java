@@ -21,7 +21,7 @@ package co.elastic.apm.agent.kafka;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.asm.Advice;
@@ -85,7 +85,7 @@ public class KafkaConsumerInstrumentation extends BaseKafkaInstrumentation {
             span.withType("messaging")
                 .withSubtype("kafka")
                 .withAction("poll")
-                .withName("KafkaConsumer#poll", AbstractSpan.PRIO_HIGH_LEVEL_FRAMEWORK);
+                .withName("KafkaConsumer#poll", co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_HIGH_LEVEL_FRAMEWORK);
 
             span.getContext().getServiceTarget().withType("kafka");
 

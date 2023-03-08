@@ -22,8 +22,7 @@ package co.elastic.apm.agent.rabbitmq;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.TraceContext;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.rabbitmq.header.SpringRabbitMQTextHeaderGetter;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -98,11 +97,7 @@ public class SpringAmqpBatchMessageListenerInstrumentation extends SpringBaseIns
                     for (Message message : messageBatch) {
                         MessageProperties messageProperties = message.getMessageProperties();
                         if (messageProperties != null) {
-                            active.addSpanLink(
-                                TraceContext.<MessageProperties>getFromTraceContextTextHeaders(),
-                                SpringRabbitMQTextHeaderGetter.INSTANCE,
-                                messageProperties
-                            );
+                            active.addLink(SpringRabbitMQTextHeaderGetter.INSTANCE, messageProperties);
                         }
                     }
                 } else {

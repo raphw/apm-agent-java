@@ -20,7 +20,7 @@ package co.elastic.apm.agent.jdbc.helper;
 
 import co.elastic.apm.agent.db.signature.Scanner;
 import co.elastic.apm.agent.db.signature.SignatureParser;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.jdbc.JdbcFilter;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -96,7 +96,7 @@ public class JdbcHelper {
         if (sql.isEmpty()) {
             span.withName("empty query");
         } else if (span.isSampled()) {
-            StringBuilder spanName = span.getAndOverrideName(AbstractSpan.PRIO_DEFAULT);
+            StringBuilder spanName = span.getAndOverrideName(co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_DEFAULT);
             if (spanName != null) {
                 signatureParser.querySignature(sql, spanName, preparedStatement);
             }

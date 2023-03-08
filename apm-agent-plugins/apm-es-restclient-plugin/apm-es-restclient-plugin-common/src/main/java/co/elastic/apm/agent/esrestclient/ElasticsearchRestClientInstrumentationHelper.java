@@ -21,7 +21,7 @@ package co.elastic.apm.agent.esrestclient;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.objectpool.ObjectPool;

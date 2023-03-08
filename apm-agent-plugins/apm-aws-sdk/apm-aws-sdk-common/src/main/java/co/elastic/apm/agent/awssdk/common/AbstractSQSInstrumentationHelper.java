@@ -21,7 +21,7 @@ package co.elastic.apm.agent.awssdk.common;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.tracer.Transaction;
@@ -114,14 +114,14 @@ public abstract class AbstractSQSInstrumentationHelper<R, C, MessageT> extends A
             .withAction(action);
 
         if (span.isSampled()) {
-            StringBuilder name = span.getAndOverrideName(AbstractSpan.PRIO_DEFAULT);
+            StringBuilder name = span.getAndOverrideName(co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_DEFAULT);
             if (name != null) {
                 name.append("SQS ").append(spanNameOperation);
                 if (queueName != null && !queueName.isEmpty()) {
                     name.append(" ").append(queueName);
                 }
             }
-            span.withName("SQS", AbstractSpan.PRIO_DEFAULT - 1);
+            span.withName("SQS", co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_DEFAULT - 1);
 
             if (queueName != null) {
                 span.getContext().getMessage()

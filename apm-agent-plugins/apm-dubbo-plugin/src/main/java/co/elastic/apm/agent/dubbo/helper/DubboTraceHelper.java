@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.dubbo.helper;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.tracer.metadata.Destination;

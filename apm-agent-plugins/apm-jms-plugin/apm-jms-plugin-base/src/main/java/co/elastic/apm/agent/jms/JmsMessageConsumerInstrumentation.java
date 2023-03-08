@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.jms;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.tracer.Transaction;
@@ -176,11 +176,7 @@ public abstract class JmsMessageConsumerInstrumentation extends BaseJmsInstrumen
                             helper.addMessageDetails(message, abstractSpan);
                         }
                     } else if (abstractSpan != null) {
-                        abstractSpan.addSpanLink(
-                            TraceContext.<Message>getFromTraceContextTextHeaders(),
-                            JmsMessagePropertyAccessor.instance(),
-                            message
-                        );
+                        abstractSpan.addLink(JmsMessagePropertyAccessor.instance(), message);
                     }
                 } else if (abstractSpan instanceof Transaction) {
                     // Do not report polling transactions if not yielding messages
