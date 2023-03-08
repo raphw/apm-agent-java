@@ -18,13 +18,13 @@
  */
 package co.elastic.apm.agent.java_ldap;
 
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
 //import com.sun.jndi.ldap.Connection;
 //import com.sun.jndi.ldap.LdapResult;
+import co.elastic.apm.agent.tracer.Tracer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 
 public class LdapClientAdvice { // TODO Rafael
 
-    private static final ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
+    private static final Tracer tracer = GlobalTracer.get();
 
 //    @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
 //    public static Object onEnter(@Advice.Origin("#m") String methodName, @Advice.FieldValue(value = "conn", typing = Assigner.Typing.DYNAMIC) Connection connection) {

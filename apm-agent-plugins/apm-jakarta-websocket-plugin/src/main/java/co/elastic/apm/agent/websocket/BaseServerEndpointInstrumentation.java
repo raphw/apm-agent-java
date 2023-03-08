@@ -19,9 +19,9 @@
 package co.elastic.apm.agent.websocket;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.tracer.Outcome;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.NamedElement;
@@ -48,7 +48,7 @@ public abstract class BaseServerEndpointInstrumentation extends TracerAwareInstr
 
     private final Collection<String> applicationPackages;
 
-    public BaseServerEndpointInstrumentation(ElasticApmTracer tracer) {
+    public BaseServerEndpointInstrumentation(Tracer tracer) {
         applicationPackages = tracer.getConfig(StacktraceConfiguration.class).getApplicationPackages();
     }
 

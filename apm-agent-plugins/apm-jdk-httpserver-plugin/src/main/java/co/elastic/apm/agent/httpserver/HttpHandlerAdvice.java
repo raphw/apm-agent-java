@@ -19,11 +19,11 @@
 package co.elastic.apm.agent.httpserver;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.web.ResultUtil;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.tracer.metadata.Request;
 import co.elastic.apm.agent.tracer.metadata.Response;
@@ -40,13 +40,13 @@ import java.util.Map;
 
 public class HttpHandlerAdvice {
 
-    private static final ElasticApmTracer tracer;
+    private static final Tracer tracer;
     private static final HttpServerHelper serverHelper;
     private static final WebConfiguration webConfiguration;
     private static final CoreConfiguration coreConfiguration;
 
     static {
-        tracer = GlobalTracer.get().require(ElasticApmTracer.class);
+        tracer = GlobalTracer.get();
         serverHelper = new HttpServerHelper(tracer.getConfig(WebConfiguration.class));
         webConfiguration = tracer.getConfig(WebConfiguration.class);
         coreConfiguration = tracer.getConfig(CoreConfiguration.class);
@@ -142,8 +142,7 @@ public class HttpHandlerAdvice {
             .withFinished(true)
             .withStatusCode(exchange.getResponseCode());
 
-        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
-        if (transaction.isSampled() && tracer.getConfig(CoreConfiguration.class).isCaptureHeaders()) {
+        if (transaction.isSampled() && coreConfiguration.isCaptureHeaders()) {
             Headers headers = exchange.getResponseHeaders();
             if (headers != null) {
                 for (Map.Entry<String, List<String>> header : headers.entrySet()) {

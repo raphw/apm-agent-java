@@ -20,11 +20,11 @@ package co.elastic.apm.agent.dubbo.advice;
 
 import co.elastic.apm.agent.dubbo.helper.AlibabaDubboTextMapPropagator;
 import co.elastic.apm.agent.dubbo.helper.DubboTraceHelper;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
 import com.alibaba.dubbo.rpc.Invocation;
@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 
 public class AlibabaMonitorFilterAdvice {
 
-    private static final ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
+    private static final Tracer tracer = GlobalTracer.get();
 
     @Nullable
     @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)

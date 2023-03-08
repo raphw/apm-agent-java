@@ -20,10 +20,10 @@ package co.elastic.apm.agent.awssdk.common;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -77,7 +77,7 @@ public abstract class AbstractSQSInstrumentationHelper<R, C, MessageT> extends A
 
     protected abstract boolean isReceiveMessageRequest(R request);
 
-    protected AbstractSQSInstrumentationHelper(ElasticApmTracer tracer, IAwsSdkDataSource<R, C> awsSdkDataSource) {
+    protected AbstractSQSInstrumentationHelper(Tracer tracer, IAwsSdkDataSource<R, C> awsSdkDataSource) {
         super(tracer, awsSdkDataSource);
         this.messagingConfiguration = tracer.getConfig(MessagingConfiguration.class);
         this.coreConfiguration = tracer.getConfig(CoreConfiguration.class);
@@ -88,7 +88,11 @@ public abstract class AbstractSQSInstrumentationHelper<R, C, MessageT> extends A
         if (WildcardMatcher.isAnyMatch(messagingConfiguration.getIgnoreMessageQueues(), queueName)) {
             return null;
         }
-        Span<?> span = tracer.createExitChildSpan();
+        AbstractSpan<?> active = tracer.getActive();
+        if (active == null) {
+            return null;
+        }
+        Span<?> span = active.createExitSpan();
         if (span != null) {
             span.withType(MESSAGING_TYPE)
                 .withSubtype(SQS_TYPE);

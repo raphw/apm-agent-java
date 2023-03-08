@@ -20,8 +20,8 @@ package co.elastic.apm.agent.kafka.helper;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.tracer.metadata.Message;
@@ -40,11 +40,11 @@ class ConsumerRecordsIteratorWrapper implements Iterator<ConsumerRecord<?, ?>> {
     public static final String FRAMEWORK_NAME = "Kafka";
 
     private final Iterator<ConsumerRecord<?, ?>> delegate;
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final CoreConfiguration coreConfiguration;
     private final MessagingConfiguration messagingConfiguration;
 
-    public ConsumerRecordsIteratorWrapper(Iterator<ConsumerRecord<?, ?>> delegate, ElasticApmTracer tracer) {
+    public ConsumerRecordsIteratorWrapper(Iterator<ConsumerRecord<?, ?>> delegate, Tracer tracer) {
         this.delegate = delegate;
         this.tracer = tracer;
         coreConfiguration = tracer.getConfig(CoreConfiguration.class);

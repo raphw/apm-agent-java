@@ -19,7 +19,6 @@
 package co.elastic.apm.agent.javalin;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
 import co.elastic.apm.agent.tracer.AbstractSpan;
@@ -86,7 +85,7 @@ public class JavalinInstrumentation extends TracerAwareInstrumentation {
 
     public static class HandlerAdapterAdvice {
 
-        private static final WebConfiguration webConfig = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(WebConfiguration.class);
+        private static final WebConfiguration webConfig = GlobalTracer.get().getConfig(WebConfiguration.class);
 
         // never invoked, only used to cache the fact that the io.javalin.http.Context#handlerType() method is unavailable in this Javalin version
         private static final MethodHandle NOOP = MethodHandles.constant(String.class, "Non-supported Javalin version");

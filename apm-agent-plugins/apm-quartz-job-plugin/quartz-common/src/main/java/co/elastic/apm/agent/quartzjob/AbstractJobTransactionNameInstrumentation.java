@@ -19,12 +19,11 @@
 package co.elastic.apm.agent.quartzjob;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
 import co.elastic.apm.agent.util.VersionUtils;
@@ -52,7 +51,7 @@ public abstract class AbstractJobTransactionNameInstrumentation extends TracerAw
 
     private final Collection<String> applicationPackages;
 
-    protected AbstractJobTransactionNameInstrumentation(ElasticApmTracer tracer) {
+    protected AbstractJobTransactionNameInstrumentation(Tracer tracer) {
         applicationPackages = tracer.getConfig(StacktraceConfiguration.class).getApplicationPackages();
     }
 
@@ -115,7 +114,7 @@ public abstract class AbstractJobTransactionNameInstrumentation extends TracerAw
 
         @Nullable
         private static Transaction<?> createAndActivateTransaction(Class<?> originClass, String name) {
-            Transaction<?> transaction = GlobalTracer.get().require(Tracer.class).startRootTransaction(PrivilegedActionUtils.getClassLoader(originClass));
+            Transaction<?> transaction = GlobalTracer.get().startRootTransaction(PrivilegedActionUtils.getClassLoader(originClass));
             if (transaction != null) {
                 transaction.withName(name)
                     .withType(AbstractJobTransactionNameInstrumentation.TRANSACTION_TYPE)

@@ -20,9 +20,9 @@ package co.elastic.apm.agent.servlet;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.httpserver.HttpServerHelper;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.context.web.ResultUtil;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -60,10 +60,10 @@ public class ServletTransactionHelper {
     private final Set<String> METHODS_WITH_BODY = new HashSet<>(Arrays.asList("POST", "PUT", "PATCH", "DELETE"));
     private final CoreConfiguration coreConfiguration;
     private final WebConfiguration webConfiguration;
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final HttpServerHelper serverHelper;
 
-    public ServletTransactionHelper(ElasticApmTracer tracer) {
+    public ServletTransactionHelper(Tracer tracer) {
         this.coreConfiguration = tracer.getConfig(CoreConfiguration.class);
         this.webConfiguration = tracer.getConfig(WebConfiguration.class);
         this.tracer = tracer;

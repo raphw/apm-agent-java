@@ -20,11 +20,10 @@ package co.elastic.apm.agent.springwebflux;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.httpserver.HttpServerHelper;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.context.web.ResultUtil;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -83,8 +82,8 @@ public class WebfluxHelper {
 
     static {
 
-        coreConfig = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(CoreConfiguration.class);
-        webConfig = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(WebConfiguration.class);
+        coreConfig = GlobalTracer.get().getConfig(CoreConfiguration.class);
+        webConfig = GlobalTracer.get().getConfig(WebConfiguration.class);
         serverHelper = new HttpServerHelper(webConfig);
     }
 

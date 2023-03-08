@@ -21,11 +21,12 @@ package co.elastic.apm.agent.awssdk.v1.helper;
 import co.elastic.apm.agent.awssdk.common.AbstractSQSInstrumentationHelper;
 import co.elastic.apm.agent.awssdk.v1.helper.sqs.wrapper.ReceiveMessageResultWrapper;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.dispatch.TextHeaderSetter;
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.Request;
@@ -46,13 +47,13 @@ import java.util.Map;
 
 public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, ExecutionContext, Message> implements TextHeaderSetter<Map<String, MessageAttributeValue>> {
 
-    private static final SQSHelper INSTANCE = new SQSHelper(GlobalTracer.get().require(ElasticApmTracer.class));
+    private static final SQSHelper INSTANCE = new SQSHelper(GlobalTracer.get());
 
     public static SQSHelper getInstance() {
         return INSTANCE;
     }
 
-    protected SQSHelper(ElasticApmTracer tracer) {
+    protected SQSHelper(Tracer tracer) {
         super(tracer, SdkV1DataSource.getInstance());
     }
 
@@ -166,10 +167,13 @@ public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, Exec
     @Override
     public Span<?> startSpan(Request<?> request, URI httpURI, ExecutionContext context) {
         if (isAlreadyActive(request)) {
-            Span<?> activeSpan = tracer.getActiveExitSpan();
-            if (activeSpan != null && SQS_TYPE.equals(activeSpan.getSubtype())) {
-                enrichSpan(activeSpan, request, request.getEndpoint(), context);
-                activeSpan.withSync(isRequestSync(request.getOriginalRequest()));
+            AbstractSpan<?> active = tracer.getActive();
+            if (active != null) {
+                Span<?> activeSpan = active.createExitSpan();
+                if (activeSpan != null && SQS_TYPE.equals(activeSpan.getSubtype())) {
+                    enrichSpan(activeSpan, request, request.getEndpoint(), context);
+                    activeSpan.withSync(isRequestSync(request.getOriginalRequest()));
+                }
             }
         } else {
             Span<?> span = super.startSpan(request, request.getEndpoint(), context);

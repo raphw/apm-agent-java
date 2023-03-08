@@ -24,6 +24,7 @@ import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.state.GlobalVariables;
 import co.elastic.apm.agent.sdk.weakconcurrent.DetachedThreadLocal;
@@ -48,7 +49,7 @@ public abstract class ServletApiAdvice {
     private static final String FRAMEWORK_NAME = "Servlet API";
     static final String SPAN_TYPE = "servlet";
     static final String SPAN_SUBTYPE = "request-dispatcher";
-    private static final ServletTransactionHelper servletTransactionHelper = new ServletTransactionHelper(GlobalTracer.get().require(ElasticApmTracer.class));
+    private static final ServletTransactionHelper servletTransactionHelper = new ServletTransactionHelper(GlobalTracer.get());
 
     private static final DetachedThreadLocal<Boolean> excluded = GlobalVariables.get(ServletApiAdvice.class, "excluded", WeakConcurrent.<Boolean>buildThreadLocal());
     private static final DetachedThreadLocal<Object> servletPathTL = GlobalVariables.get(ServletApiAdvice.class, "servletPath", WeakConcurrent.buildThreadLocal());
@@ -61,7 +62,7 @@ public abstract class ServletApiAdvice {
         ServletApiAdapter<HttpServletRequest, HttpServletResponse, ServletContext, ServletContextEvent, FilterConfig, ServletConfig> adapter,
         Object servletRequest) {
 
-        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
+        Tracer tracer = GlobalTracer.get().require(Tracer.class);
         if (tracer == null) {
             return null;
         }
@@ -88,9 +89,12 @@ public abstract class ServletApiAdvice {
                 return null;
             }
 
-            ServletServiceNameHelper.determineServiceName(adapter, adapter.getServletContext(httpServletRequest), tracer);
+            ElasticApmTracer elasticApmTracer = tracer.probe(ElasticApmTracer.class);
+            if (elasticApmTracer != null) {
+                ServletServiceNameHelper.determineServiceName(adapter, adapter.getServletContext(httpServletRequest), elasticApmTracer);
+            }
 
-            Transaction transaction = servletTransactionHelper.createAndActivateTransaction(adapter, adapter, httpServletRequest);
+            Transaction<?> transaction = servletTransactionHelper.createAndActivateTransaction(adapter, adapter, httpServletRequest);
 
             if (transaction == null) {
                 // if the httpServletRequest is excluded, avoid matching all exclude patterns again on each filter invocation
@@ -166,15 +170,13 @@ public abstract class ServletApiAdvice {
         @Nullable Throwable t,
         Object thiz) {
 
-        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
-        if (tracer == null) {
-            return;
-        }
-        Transaction transaction = null;
+        Tracer tracer = GlobalTracer.get();
+
+        Transaction<?> transaction = null;
         Scope scope = null;
         Span<?> span = null;
-        if (transactionOrScopeOrSpan instanceof Transaction) {
-            transaction = (Transaction) transactionOrScopeOrSpan;
+        if (transactionOrScopeOrSpan instanceof Transaction<?>) {
+            transaction = (Transaction<?>) transactionOrScopeOrSpan;
         } else if (transactionOrScopeOrSpan instanceof Scope) {
             scope = (Scope) transactionOrScopeOrSpan;
         } else if (transactionOrScopeOrSpan instanceof Span<?>) {
@@ -188,7 +190,7 @@ public abstract class ServletApiAdvice {
         HttpServletRequest httpServletRequest = adapter.asHttpServletRequest(servletRequest);
         HttpServletResponse httpServletResponse = adapter.asHttpServletResponse(servletResponse);
         if (adapter.isInstanceOfHttpServlet(thiz) && httpServletRequest != null) {
-            Transaction currentTransaction = tracer.currentTransaction();
+            Transaction<?> currentTransaction = tracer.currentTransaction();
             if (currentTransaction != null) {
                 TransactionNameUtils.setTransactionNameByServletClass(adapter.getMethod(httpServletRequest), thiz.getClass(), currentTransaction.getAndOverrideName(PRIO_LOW_LEVEL_FRAMEWORK));
 

@@ -18,9 +18,9 @@
  */
 package co.elastic.apm.agent.hibernatesearch;
 
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Tracer;
 
 public final class HibernateSearchHelper {
 
@@ -29,7 +29,7 @@ public final class HibernateSearchHelper {
     }
 
     public static Span<?> createAndActivateSpan(final Tracer tracer, final String methodName,
-                                             final String query) {
+                                                final String query) {
 
         AbstractSpan<?> active = tracer.getActive();
         // avoid creating the same Span<?> twice for example, when an instrumented API is wrapped

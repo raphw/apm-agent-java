@@ -18,22 +18,22 @@
  */
 package co.elastic.apm.agent.awssdk.common;
 
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Tracer;
 
 import javax.annotation.Nullable;
 import java.net.URI;
 
 public abstract class AbstractAwsSdkInstrumentationHelper<R, C> {
     protected final IAwsSdkDataSource<R, C> awsSdkDataSource;
-    protected final ElasticApmTracer tracer;
+    protected final Tracer tracer;
 
-    protected AbstractAwsSdkInstrumentationHelper(ElasticApmTracer tracer, IAwsSdkDataSource<R, C> awsSdkDataSource) {
+    protected AbstractAwsSdkInstrumentationHelper(Tracer tracer, IAwsSdkDataSource<R, C> awsSdkDataSource) {
         this.tracer = tracer;
         this.awsSdkDataSource = awsSdkDataSource;
     }
 
-    public ElasticApmTracer getTracer() {
+    public Tracer getTracer() {
         return tracer;
     }
 

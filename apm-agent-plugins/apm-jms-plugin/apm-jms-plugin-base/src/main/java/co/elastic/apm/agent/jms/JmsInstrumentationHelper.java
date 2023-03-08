@@ -20,10 +20,10 @@ package co.elastic.apm.agent.jms;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
@@ -84,11 +84,11 @@ public class JmsInstrumentationHelper {
     static final String FRAMEWORK_NAME = "JMS";
 
     private static final Logger logger = LoggerFactory.getLogger(JmsInstrumentationHelper.class);
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final CoreConfiguration coreConfiguration;
     private final MessagingConfiguration messagingConfiguration;
 
-    public JmsInstrumentationHelper(ElasticApmTracer tracer) {
+    public JmsInstrumentationHelper(Tracer tracer) {
         this.tracer = tracer;
         coreConfiguration = tracer.getConfig(CoreConfiguration.class);
         messagingConfiguration = tracer.getConfig(MessagingConfiguration.class);
@@ -258,7 +258,7 @@ public class JmsInstrumentationHelper {
                 messageContext.addHeader(JMS_EXPIRATION_HEADER, String.valueOf(message.getJMSExpiration()));
                 messageContext.addHeader(JMS_TIMESTAMP_HEADER, String.valueOf(message.getJMSTimestamp()));
 
-                Enumeration properties = message.getPropertyNames();
+                Enumeration<?> properties = message.getPropertyNames();
                 if (properties != null) {
                     while (properties.hasMoreElements()) {
                         String propertyName = String.valueOf(properties.nextElement());

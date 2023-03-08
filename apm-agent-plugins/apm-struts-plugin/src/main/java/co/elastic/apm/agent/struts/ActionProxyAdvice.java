@@ -18,7 +18,6 @@
  */
 package co.elastic.apm.agent.struts;
 
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
@@ -36,7 +35,7 @@ public class ActionProxyAdvice {
 
     @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
     public static Object onEnterExecute(@Advice.This ActionProxy actionProxy) {
-        Transaction<?> transaction = GlobalTracer.get().require(Tracer.class).currentTransaction();
+        Transaction<?> transaction = GlobalTracer.get().currentTransaction();
         if (transaction == null) {
             return null;
         }

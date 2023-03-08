@@ -18,8 +18,8 @@
  */
 package co.elastic.apm.agent.springwebclient;
 
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Tracer;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

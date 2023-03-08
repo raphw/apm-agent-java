@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.rabbitmq;
 
 
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -32,10 +32,10 @@ public class MessageBatchIteratorWrapper implements Iterator<Message> {
     public static final Logger logger = LoggerFactory.getLogger(MessageBatchIteratorWrapper.class);
 
     private final Iterator<Message> delegate;
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final SpringAmqpTransactionHelper transactionHelper;
 
-    public MessageBatchIteratorWrapper(Iterator<Message> delegate, ElasticApmTracer tracer, SpringAmqpTransactionHelper transactionHelper) {
+    public MessageBatchIteratorWrapper(Iterator<Message> delegate, Tracer tracer, SpringAmqpTransactionHelper transactionHelper) {
         this.delegate = delegate;
         this.tracer = tracer;
         this.transactionHelper = transactionHelper;

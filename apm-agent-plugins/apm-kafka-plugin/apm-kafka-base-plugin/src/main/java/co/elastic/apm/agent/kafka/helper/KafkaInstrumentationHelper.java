@@ -19,14 +19,15 @@
 package co.elastic.apm.agent.kafka.helper;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
-import co.elastic.apm.agent.objectpool.ObjectPool;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.pooling.Allocator;
+import co.elastic.apm.agent.tracer.pooling.ObjectPool;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -39,17 +40,17 @@ import java.util.List;
 public class KafkaInstrumentationHelper {
 
     public static final Logger logger = LoggerFactory.getLogger(KafkaInstrumentationHelper.class);
-    private static final KafkaInstrumentationHelper INSTANCE = new KafkaInstrumentationHelper(GlobalTracer.get().require(ElasticApmTracer.class));
+    private static final KafkaInstrumentationHelper INSTANCE = new KafkaInstrumentationHelper(GlobalTracer.get());
 
     private final ObjectPool<CallbackWrapper> callbackWrapperObjectPool;
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final MessagingConfiguration messagingConfiguration;
 
     public static KafkaInstrumentationHelper get() {
         return INSTANCE;
     }
 
-    public KafkaInstrumentationHelper(ElasticApmTracer tracer) {
+    public KafkaInstrumentationHelper(Tracer tracer) {
         this.tracer = tracer;
         this.messagingConfiguration = tracer.getConfig(MessagingConfiguration.class);
         this.callbackWrapperObjectPool = tracer.getObjectPoolFactory().createRecyclableObjectPool(256,
@@ -76,7 +77,11 @@ public class KafkaInstrumentationHelper {
             return null;
         }
 
-        final Span<?> span = tracer.createExitChildSpan();
+        AbstractSpan<?> active = tracer.getActive();
+        if (active == null) {
+            return null;
+        }
+        final Span<?> span = active.createExitSpan();
         if (span == null) {
             return null;
         }

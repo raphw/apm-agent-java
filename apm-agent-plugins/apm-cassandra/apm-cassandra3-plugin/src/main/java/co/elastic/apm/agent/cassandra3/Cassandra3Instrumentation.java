@@ -21,7 +21,6 @@ package co.elastic.apm.agent.cassandra3;
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.bci.bytebuddy.CustomElementMatchers;
 import co.elastic.apm.agent.cassandra.CassandraHelper;
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.Destination;
 import co.elastic.apm.agent.tracer.Span;
@@ -83,7 +82,7 @@ public class Cassandra3Instrumentation extends TracerAwareInstrumentation {
 
     public static class Cassandra3Advice {
 
-        private static final CassandraHelper cassandraHelper = new CassandraHelper(GlobalTracer.get().require(Tracer.class));
+        private static final CassandraHelper cassandraHelper = new CassandraHelper(GlobalTracer.get());
 
         @Nullable
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)

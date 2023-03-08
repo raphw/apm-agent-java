@@ -18,13 +18,13 @@
  */
 package co.elastic.apm.agent.mongodb;
 
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.Tracer;
 import org.bson.BsonDocument;
 import org.bson.BsonValue;
 
@@ -34,11 +34,11 @@ public class MongoHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(MongoHelper.class);
 
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
     private final MongoConfiguration config;
 
     public MongoHelper() {
-        this.tracer = GlobalTracer.get().require(ElasticApmTracer.class);
+        this.tracer = GlobalTracer.get();
         this.config = tracer.getConfig(MongoConfiguration.class);
     }
 

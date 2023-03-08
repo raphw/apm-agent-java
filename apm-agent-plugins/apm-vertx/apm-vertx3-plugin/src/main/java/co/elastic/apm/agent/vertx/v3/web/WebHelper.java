@@ -19,8 +19,8 @@
 package co.elastic.apm.agent.vertx.v3.web;
 
 import co.elastic.apm.agent.collections.WeakConcurrentProviderImpl;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -36,7 +36,7 @@ public class WebHelper extends AbstractVertxWebHelper {
 
     private static final Logger log = LoggerFactory.getLogger(WebHelper.class);
 
-    private static final WebHelper INSTANCE = new WebHelper(GlobalTracer.get().require(ElasticApmTracer.class));
+    private static final WebHelper INSTANCE = new WebHelper(GlobalTracer.get());
 
     static final WeakMap<Object, Transaction<?>> transactionMap = WeakConcurrentProviderImpl.createWeakSpanMap();
 
@@ -48,7 +48,7 @@ public class WebHelper extends AbstractVertxWebHelper {
     // that should do nothing other than returning the wrapped delegate instance of type HttpServerRequestImpl.
     private final NoopHandler noopHandler = new NoopHandler();
 
-    WebHelper(ElasticApmTracer tracer) {
+    WebHelper(Tracer tracer) {
         super(tracer);
     }
 

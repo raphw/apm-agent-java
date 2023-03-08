@@ -18,13 +18,12 @@
  */
 package co.elastic.apm.agent.httpclient.v4.helper;
 
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.objectpool.ObjectPool;
-import co.elastic.apm.agent.objectpool.ObjectPoolFactory;
 import co.elastic.apm.agent.tracer.pooling.Allocator;
+import co.elastic.apm.agent.tracer.pooling.ObjectPool;
+import co.elastic.apm.agent.tracer.pooling.ObjectPoolFactory;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
 import org.apache.http.protocol.HttpContext;
@@ -39,7 +38,7 @@ public class ApacheHttpAsyncClientHelper {
     private final ObjectPool<FutureCallbackWrapper<?>> futureCallbackWrapperObjectPool;
 
     public ApacheHttpAsyncClientHelper() {
-        ObjectPoolFactory factory = GlobalTracer.get().require(ElasticApmTracer.class).getObjectPoolFactory();
+        ObjectPoolFactory factory = GlobalTracer.get().getObjectPoolFactory();
         requestProducerWrapperObjectPool = factory.createRecyclableObjectPool(MAX_POOLED_ELEMENTS, new RequestProducerWrapperAllocator());
         futureCallbackWrapperObjectPool = factory.createRecyclableObjectPool(MAX_POOLED_ELEMENTS, new FutureCallbackWrapperAllocator());
     }

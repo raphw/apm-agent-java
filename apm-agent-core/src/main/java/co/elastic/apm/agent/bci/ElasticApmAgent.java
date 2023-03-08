@@ -897,7 +897,11 @@ public class ElasticApmAgent {
         Constructor<? extends ElasticApmInstrumentation> constructor = null;
         try {
             if (withTracer) {
-                constructor = instrumentation.getConstructor(ElasticApmTracer.class);
+                try {
+                    constructor = instrumentation.getConstructor(ElasticApmTracer.class);
+                } catch (NoSuchMethodException ignored) {
+                    constructor = instrumentation.getConstructor(co.elastic.apm.agent.tracer.Tracer.class);
+                }
             } else {
                 constructor = instrumentation.getConstructor();
             }

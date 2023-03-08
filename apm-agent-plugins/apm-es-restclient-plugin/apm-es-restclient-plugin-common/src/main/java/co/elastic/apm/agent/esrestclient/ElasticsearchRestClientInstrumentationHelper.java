@@ -19,14 +19,14 @@
 package co.elastic.apm.agent.esrestclient;
 
 import co.elastic.apm.agent.common.util.WildcardMatcher;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.objectpool.ObjectPool;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.Tracer;
+import co.elastic.apm.agent.tracer.pooling.ObjectPool;
 import co.elastic.apm.agent.util.IOUtils;
 import co.elastic.apm.agent.util.LoggerUtils;
 import co.elastic.apm.agent.tracer.pooling.Allocator;
@@ -46,7 +46,7 @@ public class ElasticsearchRestClientInstrumentationHelper {
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchRestClientInstrumentationHelper.class);
 
     private static final Logger unsupportedOperationOnceLogger = LoggerUtils.logOnce(logger);
-    private static final ElasticsearchRestClientInstrumentationHelper INSTANCE = new ElasticsearchRestClientInstrumentationHelper(GlobalTracer.get().require(ElasticApmTracer.class));
+    private static final ElasticsearchRestClientInstrumentationHelper INSTANCE = new ElasticsearchRestClientInstrumentationHelper(GlobalTracer.get());
 
     public static final List<WildcardMatcher> QUERY_WILDCARD_MATCHERS = Arrays.asList(
         WildcardMatcher.valueOf("*_search"),
@@ -58,7 +58,7 @@ public class ElasticsearchRestClientInstrumentationHelper {
     public static final String ELASTICSEARCH = "elasticsearch";
     public static final String SPAN_ACTION = "request";
     private static final int MAX_POOLED_ELEMENTS = 256;
-    private final ElasticApmTracer tracer;
+    private final Tracer tracer;
 
     private final ObjectPool<ResponseListenerWrapper> responseListenerObjectPool;
 
@@ -66,7 +66,7 @@ public class ElasticsearchRestClientInstrumentationHelper {
         return INSTANCE;
     }
 
-    private ElasticsearchRestClientInstrumentationHelper(ElasticApmTracer tracer) {
+    private ElasticsearchRestClientInstrumentationHelper(Tracer tracer) {
         this.tracer = tracer;
         this.responseListenerObjectPool = tracer.getObjectPoolFactory().createRecyclableObjectPool(MAX_POOLED_ELEMENTS, new ResponseListenerAllocator());
     }

@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.jms;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.Tracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -55,7 +55,7 @@ public class JmsMessageListenerInstrumentation extends BaseJmsInstrumentation {
 
     private MessagingConfiguration configuration;
 
-    public JmsMessageListenerInstrumentation(ElasticApmTracer tracer) {
+    public JmsMessageListenerInstrumentation(Tracer tracer) {
         this.configuration = tracer.getConfig(MessagingConfiguration.class);
     }
 
