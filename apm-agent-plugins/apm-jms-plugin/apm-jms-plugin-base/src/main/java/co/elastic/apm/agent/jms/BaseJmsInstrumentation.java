@@ -22,7 +22,7 @@ import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import net.bytebuddy.matcher.ElementMatcher;
 
 import java.util.Collection;
@@ -51,7 +51,7 @@ public abstract class BaseJmsInstrumentation extends TracerAwareInstrumentation 
         protected static final CoreConfiguration coreConfiguration;
 
         static {
-            ElasticApmTracer elasticApmTracer = GlobalTracer.requireTracerImpl();
+            ElasticApmTracer elasticApmTracer = GlobalTracer.get().require(ElasticApmTracer.class);
 
             // loading helper class will load JMS-related classes if loaded from Instrumentation static init
             // that fails when trying to load instrumentation classes without JMS dependencies, for example when generating

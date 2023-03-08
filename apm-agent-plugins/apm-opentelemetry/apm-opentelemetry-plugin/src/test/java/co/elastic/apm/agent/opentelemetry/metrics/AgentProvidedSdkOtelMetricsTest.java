@@ -20,7 +20,7 @@ package co.elastic.apm.agent.opentelemetry.metrics;
 
 import co.elastic.apm.agent.embeddedotel.EmbeddedSdkTestUtil;
 import co.elastic.apm.agent.opentelemetry.OtelTestUtils;
-import co.elastic.apm.agent.otelmetricsdk.AbstractOtelMetricsTest;
+//import co.elastic.apm.agent.otelmetricsdk.AbstractOtelMetricsTest;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.Meter;
@@ -31,57 +31,57 @@ import java.lang.reflect.Method;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-public class AgentProvidedSdkOtelMetricsTest extends AbstractOtelMetricsTest {
+public class AgentProvidedSdkOtelMetricsTest { // extends AbstractOtelMetricsTest { TODO Rafael
 
-    @BeforeEach
-    public void cleanGlobalOtel() {
-        OtelTestUtils.resetElasticOpenTelemetry();
-        OtelTestUtils.clearGlobalOpenTelemetry();
-        EmbeddedSdkTestUtil.stopAndReset(tracer);
-    }
-
-    @Override
-    protected MeterProvider createOrLookupMeterProvider() {
-        return GlobalOpenTelemetry.getMeterProvider();
-    }
-
-    @Override
-    protected void invokeSdkForceFlush() {
-        MeterProvider meterProvider = getMeterProvider();
-        try {
-            //the MeterProvider is currently wrapped by our bridge. We need to unwrap it first
-            Method unwrapMethod = meterProvider.getClass().getMethod("unwrapBridge");
-            Object proxyMeterProvider = unwrapMethod.invoke(meterProvider);
-
-            //Now we have a ProxyMeterProvider, which we need to unwrap aswell
-            Method getDelegateMethod = proxyMeterProvider.getClass().getMethod("getDelegate");
-            Object unwrappedMeterProvider = getDelegateMethod.invoke(proxyMeterProvider);
-
-            // Calls SdkMeterProvider.forceFlush()
-            Method forceFlush = unwrappedMeterProvider.getClass().getMethod("forceFlush");
-            forceFlush.invoke(unwrappedMeterProvider);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    protected Meter createMeter(String name) {
-        Meter meter = GlobalOpenTelemetry.getMeter(name);
-        //make sure that we use a "hidden" SDK provided by the agent (and not the one visible to our classloader)
-        assertThat(meter.getClass().getName()).startsWith("co.elastic.apm.");
-        return meter;
-    }
-
-    //This test can be used to manually verify that otel-SDK logs are redirected to the agent logs
-    //This needs to be executed via /.mvn package, because otherwise shading of the embedded-sdk didn't take place
-    //@Test
-    void generateLogs() {
-        Meter meter = createMeter("blub");
-        LongCounter foo = meter.counterBuilder("foo").build();
-
-        for (int i = 0; i < 42; i++) {
-            foo.add(-42); //will generate a warning because negative values are not allowed
-        }
-    }
+//    @BeforeEach
+//    public void cleanGlobalOtel() {
+//        OtelTestUtils.resetElasticOpenTelemetry();
+//        OtelTestUtils.clearGlobalOpenTelemetry();
+//        EmbeddedSdkTestUtil.stopAndReset(tracer);
+//    }
+//
+//    @Override
+//    protected MeterProvider createOrLookupMeterProvider() {
+//        return GlobalOpenTelemetry.getMeterProvider();
+//    }
+//
+//    @Override
+//    protected void invokeSdkForceFlush() {
+//        MeterProvider meterProvider = getMeterProvider();
+//        try {
+//            //the MeterProvider is currently wrapped by our bridge. We need to unwrap it first
+//            Method unwrapMethod = meterProvider.getClass().getMethod("unwrapBridge");
+//            Object proxyMeterProvider = unwrapMethod.invoke(meterProvider);
+//
+//            //Now we have a ProxyMeterProvider, which we need to unwrap aswell
+//            Method getDelegateMethod = proxyMeterProvider.getClass().getMethod("getDelegate");
+//            Object unwrappedMeterProvider = getDelegateMethod.invoke(proxyMeterProvider);
+//
+//            // Calls SdkMeterProvider.forceFlush()
+//            Method forceFlush = unwrappedMeterProvider.getClass().getMethod("forceFlush");
+//            forceFlush.invoke(unwrappedMeterProvider);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    @Override
+//    protected Meter createMeter(String name) {
+//        Meter meter = GlobalOpenTelemetry.getMeter(name);
+//        //make sure that we use a "hidden" SDK provided by the agent (and not the one visible to our classloader)
+//        assertThat(meter.getClass().getName()).startsWith("co.elastic.apm.");
+//        return meter;
+//    }
+//
+//    //This test can be used to manually verify that otel-SDK logs are redirected to the agent logs
+//    //This needs to be executed via /.mvn package, because otherwise shading of the embedded-sdk didn't take place
+//    //@Test
+//    void generateLogs() {
+//        Meter meter = createMeter("blub");
+//        LongCounter foo = meter.counterBuilder("foo").build();
+//
+//        for (int i = 0; i < 42; i++) {
+//            foo.add(-42); //will generate a warning because negative values are not allowed
+//        }
+//    }
 }

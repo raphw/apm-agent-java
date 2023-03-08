@@ -20,7 +20,7 @@ package co.elastic.apm.agent.servlet;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.Request;
 import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
@@ -48,7 +48,7 @@ public abstract class ServletApiAdvice {
     private static final String FRAMEWORK_NAME = "Servlet API";
     static final String SPAN_TYPE = "servlet";
     static final String SPAN_SUBTYPE = "request-dispatcher";
-    private static final ServletTransactionHelper servletTransactionHelper = new ServletTransactionHelper(GlobalTracer.requireTracerImpl());
+    private static final ServletTransactionHelper servletTransactionHelper = new ServletTransactionHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     private static final DetachedThreadLocal<Boolean> excluded = GlobalVariables.get(ServletApiAdvice.class, "excluded", WeakConcurrent.<Boolean>buildThreadLocal());
     private static final DetachedThreadLocal<Object> servletPathTL = GlobalVariables.get(ServletApiAdvice.class, "servletPath", WeakConcurrent.buildThreadLocal());
@@ -61,7 +61,7 @@ public abstract class ServletApiAdvice {
         ServletApiAdapter<HttpServletRequest, HttpServletResponse, ServletContext, ServletContextEvent, FilterConfig, ServletConfig> adapter,
         Object servletRequest) {
 
-        ElasticApmTracer tracer = GlobalTracer.getTracerImpl();
+        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
         if (tracer == null) {
             return null;
         }
@@ -166,7 +166,7 @@ public abstract class ServletApiAdvice {
         @Nullable Throwable t,
         Object thiz) {
 
-        ElasticApmTracer tracer = GlobalTracer.getTracerImpl();
+        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
         if (tracer == null) {
             return;
         }

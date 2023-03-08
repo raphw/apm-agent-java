@@ -20,7 +20,7 @@ package co.elastic.apm.agent.httpserver;
 
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.Request;
 import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.context.web.ResultUtil;
@@ -50,7 +50,7 @@ public class HttpHandlerAdvice {
     private static final CoreConfiguration coreConfiguration;
 
     static {
-        tracer = GlobalTracer.requireTracerImpl();
+        tracer = GlobalTracer.get().require(ElasticApmTracer.class);
         serverHelper = new HttpServerHelper(tracer.getConfig(WebConfiguration.class));
         webConfiguration = tracer.getConfig(WebConfiguration.class);
         coreConfiguration = tracer.getConfig(CoreConfiguration.class);
@@ -146,7 +146,7 @@ public class HttpHandlerAdvice {
             .withFinished(true)
             .withStatusCode(exchange.getResponseCode());
 
-        ElasticApmTracer tracer = GlobalTracer.getTracerImpl();
+        ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
         if (transaction.isSampled() && tracer.getConfig(CoreConfiguration.class).isCaptureHeaders()) {
             Headers headers = exchange.getResponseHeaders();
             if (headers != null) {

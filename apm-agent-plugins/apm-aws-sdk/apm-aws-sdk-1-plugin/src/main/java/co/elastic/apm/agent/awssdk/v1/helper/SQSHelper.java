@@ -22,7 +22,7 @@ import co.elastic.apm.agent.awssdk.common.AbstractSQSInstrumentationHelper;
 import co.elastic.apm.agent.awssdk.v1.helper.sqs.wrapper.ReceiveMessageResultWrapper;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, ExecutionContext, Message> implements TextHeaderSetter<Map<String, MessageAttributeValue>> {
 
-    private static final SQSHelper INSTANCE = new SQSHelper(GlobalTracer.requireTracerImpl());
+    private static final SQSHelper INSTANCE = new SQSHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     public static SQSHelper getInstance() {
         return INSTANCE;

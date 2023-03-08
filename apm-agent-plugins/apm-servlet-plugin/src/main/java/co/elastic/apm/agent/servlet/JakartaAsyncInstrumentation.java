@@ -18,7 +18,8 @@
  */
 package co.elastic.apm.agent.servlet;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.servlet.helper.AsyncContextAdviceHelper;
 import co.elastic.apm.agent.servlet.helper.JakartaAsyncContextAdviceHelper;
 import jakarta.servlet.AsyncContext;
@@ -50,7 +51,7 @@ public class JakartaAsyncInstrumentation {
         }
 
         public static class JakartaStartAsyncAdvice {
-            private static final AsyncContextAdviceHelper<AsyncContext> asyncHelper = new JakartaAsyncContextAdviceHelper(GlobalTracer.requireTracerImpl());
+            private static final AsyncContextAdviceHelper<AsyncContext> asyncHelper = new JakartaAsyncContextAdviceHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
             @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
             public static void onExitStartAsync(@Advice.Return @Nullable AsyncContext asyncContext) {

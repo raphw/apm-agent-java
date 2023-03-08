@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.bci;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
 
@@ -28,6 +28,6 @@ import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
  */
 public abstract class TracerAwareInstrumentation extends ElasticApmInstrumentation {
 
-    public static final Tracer tracer = GlobalTracer.get();
+    public static final Tracer tracer = GlobalTracer.get().require(Tracer.class);
 
 }

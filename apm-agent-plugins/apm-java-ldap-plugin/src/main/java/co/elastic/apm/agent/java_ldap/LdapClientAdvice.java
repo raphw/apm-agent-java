@@ -19,52 +19,52 @@
 package co.elastic.apm.agent.java_ldap;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.impl.transaction.Span;
-import com.sun.jndi.ldap.Connection;
-import com.sun.jndi.ldap.LdapResult;
+//import com.sun.jndi.ldap.Connection;
+//import com.sun.jndi.ldap.LdapResult;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.bytecode.assign.Assigner;
 
 import javax.annotation.Nullable;
 
-public class LdapClientAdvice {
+public class LdapClientAdvice { // TODO Rafael
 
-    private static final ElasticApmTracer tracer = GlobalTracer.requireTracerImpl();
+    private static final ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
 
-    @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
-    public static Object onEnter(@Advice.Origin("#m") String methodName, @Advice.FieldValue(value = "conn", typing = Assigner.Typing.DYNAMIC) Connection connection) {
-        AbstractSpan<?> parent = tracer.getActive();
-        if (parent == null) {
-            return null;
-        }
-
-        Span span = parent.createExitSpan();
-        if (span == null) {
-            return null;
-        }
-
-        span.appendToName("LDAP ").appendToName(methodName)
-            .withType("external")
-            .withSubtype("ldap");
-
-        if (connection != null) {
-            span.getContext().getDestination().withAddress(connection.host).withPort(connection.port);
-            span.getContext().getServiceTarget().withType("ldap").withHostPortName(connection.host, connection.port);
-        }
-
-        return span.activate();
-    }
-
-    @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class, inline = false)
-    public static void onExit(@Advice.Enter @Nullable Object spanObj, @Nullable @Advice.Return LdapResult ldapResult, @Nullable @Advice.Thrown Throwable t) {
-        Span span = (Span) spanObj;
-        if (span != null) {
-            span.withOutcome((ldapResult != null && ldapResult.status == 0 /* LDAP_SUCCESS */) ? Outcome.SUCCESS : Outcome.FAILURE)
-                .captureException(t)
-                .deactivate().end();
-        }
-    }
+//    @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
+//    public static Object onEnter(@Advice.Origin("#m") String methodName, @Advice.FieldValue(value = "conn", typing = Assigner.Typing.DYNAMIC) Connection connection) {
+//        AbstractSpan<?> parent = tracer.getActive();
+//        if (parent == null) {
+//            return null;
+//        }
+//
+//        Span span = parent.createExitSpan();
+//        if (span == null) {
+//            return null;
+//        }
+//
+//        span.appendToName("LDAP ").appendToName(methodName)
+//            .withType("external")
+//            .withSubtype("ldap");
+//
+//        if (connection != null) {
+//            span.getContext().getDestination().withAddress(connection.host).withPort(connection.port);
+//            span.getContext().getServiceTarget().withType("ldap").withHostPortName(connection.host, connection.port);
+//        }
+//
+//        return span.activate();
+//    }
+//
+//    @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class, inline = false)
+//    public static void onExit(@Advice.Enter @Nullable Object spanObj, @Nullable @Advice.Return LdapResult ldapResult, @Nullable @Advice.Thrown Throwable t) {
+//        Span span = (Span) spanObj;
+//        if (span != null) {
+//            span.withOutcome((ldapResult != null && ldapResult.status == 0 /* LDAP_SUCCESS */) ? Outcome.SUCCESS : Outcome.FAILURE)
+//                .captureException(t)
+//                .deactivate().end();
+//        }
+//    }
 }

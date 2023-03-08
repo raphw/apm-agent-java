@@ -20,7 +20,7 @@ package co.elastic.apm.agent.kafka.helper;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.objectpool.ObjectPool;
@@ -39,7 +39,7 @@ import java.util.List;
 public class KafkaInstrumentationHelper {
 
     public static final Logger logger = LoggerFactory.getLogger(KafkaInstrumentationHelper.class);
-    private static final KafkaInstrumentationHelper INSTANCE = new KafkaInstrumentationHelper(GlobalTracer.requireTracerImpl());
+    private static final KafkaInstrumentationHelper INSTANCE = new KafkaInstrumentationHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     private final ObjectPool<CallbackWrapper> callbackWrapperObjectPool;
     private final ElasticApmTracer tracer;

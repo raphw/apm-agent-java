@@ -20,7 +20,7 @@ package co.elastic.apm.agent.awssdk.v1.helper;
 
 import co.elastic.apm.agent.awssdk.common.AbstractDynamoDBInstrumentationHelper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.Request;
@@ -31,7 +31,7 @@ import java.net.URI;
 
 public class DynamoDbHelper extends AbstractDynamoDBInstrumentationHelper<Request<?>, ExecutionContext> {
 
-    private static final DynamoDbHelper INSTANCE = new DynamoDbHelper(GlobalTracer.requireTracerImpl());
+    private static final DynamoDbHelper INSTANCE = new DynamoDbHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     public static DynamoDbHelper getInstance() {
         return INSTANCE;

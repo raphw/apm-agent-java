@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.log4j2.correlation;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.error.ErrorCapture;
 import co.elastic.apm.agent.loginstr.correlation.AbstractLogCorrelationHelper;
@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class Log4j2_7PlusLogCorrelationHelper extends AbstractLogCorrelationHelper {
 
-    private final Tracer tracer = GlobalTracer.get();
+    private final Tracer tracer = GlobalTracer.get().require(Tracer.class);
 
     @Override
     protected boolean addToMdc() {

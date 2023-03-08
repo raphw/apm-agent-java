@@ -18,7 +18,9 @@
  */
 package co.elastic.apm.agent.struts;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.impl.Tracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.util.TransactionNameUtils;
@@ -30,11 +32,11 @@ import static co.elastic.apm.agent.impl.transaction.AbstractSpan.PRIO_HIGH_LEVEL
 
 public class ExecuteOperationsAdvice {
 
-    private static final WebConfiguration webConfig = GlobalTracer.requireTracerImpl().getConfig(WebConfiguration.class);
+    private static final WebConfiguration webConfig = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(WebConfiguration.class);
 
     @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
     public static void setTransactionName(@Advice.Argument(0) HttpServletRequest request, @Advice.Return boolean handled) {
-        Transaction transaction = GlobalTracer.get().currentTransaction();
+        Transaction transaction = GlobalTracer.get().require(Tracer.class).currentTransaction();
         if (!handled || transaction == null) {
             return;
         }

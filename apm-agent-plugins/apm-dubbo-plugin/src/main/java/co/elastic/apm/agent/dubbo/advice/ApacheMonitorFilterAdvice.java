@@ -21,7 +21,7 @@ package co.elastic.apm.agent.dubbo.advice;
 import co.elastic.apm.agent.dubbo.helper.ApacheDubboTextMapPropagator;
 import co.elastic.apm.agent.dubbo.helper.DubboTraceHelper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.impl.transaction.Span;
@@ -38,7 +38,7 @@ import java.util.function.BiConsumer;
 
 public class ApacheMonitorFilterAdvice {
 
-    private static final ElasticApmTracer tracer = GlobalTracer.requireTracerImpl();
+    private static final ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
 
     @Nullable
     @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)

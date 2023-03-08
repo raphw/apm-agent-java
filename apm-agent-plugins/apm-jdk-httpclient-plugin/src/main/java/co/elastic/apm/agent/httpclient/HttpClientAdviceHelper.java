@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.httpclient;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.Span;
@@ -29,7 +29,7 @@ import java.net.http.HttpRequest;
 
 public class HttpClientAdviceHelper {
 
-    private static final Tracer tracer = GlobalTracer.get();
+    private static final Tracer tracer = GlobalTracer.get().require(Tracer.class);
 
     @Nullable
     public static Span startSpan(HttpRequest httpRequest) {

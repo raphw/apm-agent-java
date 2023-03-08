@@ -19,7 +19,8 @@
 package co.elastic.apm.agent.kafka;
 
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.impl.transaction.Transaction;
@@ -57,7 +58,7 @@ public class KafkaConsumerInstrumentation extends BaseKafkaInstrumentation {
 
     public static class KafkaPollEntryAdvice {
 
-        private static final MessagingConfiguration messagingConfiguration = GlobalTracer.requireTracerImpl().getConfig(MessagingConfiguration.class);
+        private static final MessagingConfiguration messagingConfiguration = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(MessagingConfiguration.class);
 
         @SuppressWarnings("unused")
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)

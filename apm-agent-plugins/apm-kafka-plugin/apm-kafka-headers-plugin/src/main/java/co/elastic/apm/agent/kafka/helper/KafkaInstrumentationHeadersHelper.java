@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.kafka.helper;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
@@ -36,7 +36,7 @@ import java.util.List;
 public class KafkaInstrumentationHeadersHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(KafkaInstrumentationHeadersHelper.class);
-    private static final KafkaInstrumentationHeadersHelper INSTANCE = new KafkaInstrumentationHeadersHelper(GlobalTracer.requireTracerImpl());
+    private static final KafkaInstrumentationHeadersHelper INSTANCE = new KafkaInstrumentationHeadersHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     private static final ThreadLocal<Boolean> wrappingDisabled = new ThreadLocal<Boolean>() {
         @Override

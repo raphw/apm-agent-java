@@ -20,15 +20,13 @@ package co.elastic.apm.agent.awssdk.v1.helper;
 
 import co.elastic.apm.agent.awssdk.common.AbstractS3InstrumentationHelper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import com.amazonaws.Request;
 import com.amazonaws.http.ExecutionContext;
 
-import javax.annotation.Nullable;
-
 public class S3Helper extends AbstractS3InstrumentationHelper<Request<?>, ExecutionContext> {
 
-    private static final S3Helper INSTANCE = new S3Helper(GlobalTracer.requireTracerImpl());
+    private static final S3Helper INSTANCE = new S3Helper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     public static S3Helper getInstance() {
         return INSTANCE;

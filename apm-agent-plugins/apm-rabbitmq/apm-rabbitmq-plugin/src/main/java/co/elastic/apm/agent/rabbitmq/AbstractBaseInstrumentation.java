@@ -21,7 +21,8 @@ package co.elastic.apm.agent.rabbitmq;
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MessagingConfiguration;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.Message;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
@@ -32,8 +33,8 @@ import java.util.Map;
 
 public abstract class AbstractBaseInstrumentation extends TracerAwareInstrumentation {
 
-    private static final CoreConfiguration coreConfiguration = GlobalTracer.requireTracerImpl().getConfig(CoreConfiguration.class);
-    private static final MessagingConfiguration messagingConfiguration = GlobalTracer.requireTracerImpl().getConfig(MessagingConfiguration.class);
+    private static final CoreConfiguration coreConfiguration = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(CoreConfiguration.class);
+    private static final MessagingConfiguration messagingConfiguration = GlobalTracer.get().require(ElasticApmTracer.class).getConfig(MessagingConfiguration.class);
 
     /**
      * @param name name of the exchange or queue

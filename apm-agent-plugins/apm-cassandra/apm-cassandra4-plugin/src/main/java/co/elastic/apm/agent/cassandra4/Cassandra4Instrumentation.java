@@ -20,7 +20,8 @@ package co.elastic.apm.agent.cassandra4;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.cassandra.CassandraHelper;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.impl.Tracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
@@ -84,7 +85,7 @@ public class Cassandra4Instrumentation extends TracerAwareInstrumentation {
     }
 
     public static class Cassandra4Advice {
-        private static final CassandraHelper cassandraHelper = new CassandraHelper(GlobalTracer.get());
+        private static final CassandraHelper cassandraHelper = new CassandraHelper(GlobalTracer.get().require(Tracer.class));
 
         @Nullable
         @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)

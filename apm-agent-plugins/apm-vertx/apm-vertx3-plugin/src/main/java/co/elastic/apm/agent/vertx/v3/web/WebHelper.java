@@ -20,7 +20,7 @@ package co.elastic.apm.agent.vertx.v3.web;
 
 import co.elastic.apm.agent.collections.WeakConcurrentProviderImpl;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -36,7 +36,7 @@ public class WebHelper extends AbstractVertxWebHelper {
 
     private static final Logger log = LoggerFactory.getLogger(WebHelper.class);
 
-    private static final WebHelper INSTANCE = new WebHelper(GlobalTracer.requireTracerImpl());
+    private static final WebHelper INSTANCE = new WebHelper(GlobalTracer.get().require(ElasticApmTracer.class));
 
     static final WeakMap<Object, Transaction> transactionMap = WeakConcurrentProviderImpl.createWeakSpanMap();
 

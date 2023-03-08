@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.httpclient;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import net.bytebuddy.asm.Advice;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class HttpRequestHeadersAdvice {
 
-    private static final Tracer tracer = GlobalTracer.get();
+    private static final Tracer tracer = GlobalTracer.get().require(Tracer.class);
 
     @Nullable
     @Advice.AssignReturned.ToReturned

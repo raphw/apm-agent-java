@@ -18,7 +18,6 @@
  */
 package co.elastic.apm.agent.mongodb.v4;
 
-import co.elastic.apm.agent.impl.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.mongodb.MongoHelper;
 import com.mongodb.ServerAddress;

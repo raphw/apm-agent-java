@@ -20,7 +20,7 @@ package co.elastic.apm.agent.jaxrs;
 
 import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.impl.transaction.Transaction;
 import net.bytebuddy.asm.Advice;
@@ -120,7 +120,7 @@ public abstract class JaxRsTransactionNameInstrumentation extends TracerAwareIns
     }
 
     static class BaseAdvice {
-        private static final boolean useAnnotationValueForTransactionName = GlobalTracer.getTracerImpl()
+        private static final boolean useAnnotationValueForTransactionName = GlobalTracer.get().require(ElasticApmTracer.class)
             .getConfig(JaxRsConfiguration.class)
             .isUseJaxRsPathForTransactionName();
 

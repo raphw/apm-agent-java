@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.grpc;
 
 import co.elastic.apm.agent.collections.WeakConcurrentProviderImpl;
-import co.elastic.apm.agent.impl.GlobalTracer;
+import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
@@ -332,7 +332,7 @@ public class GrpcHelper {
             Span spanToMap = spanFromEntry;
             if (spanToMap == null) {
                 // handling nested newCall() invocations - we still want to map the client call to the same span
-                Span tmp = GlobalTracer.get().getActiveSpan();
+                Span tmp = GlobalTracer.get().require(Tracer.class).getActiveSpan();
                 if (tmp != null && tmp.getSubtype() != null && tmp.getSubtype().equals(GRPC) && tmp.isExit()) {
                     spanToMap = tmp;
                 }
@@ -501,7 +501,7 @@ public class GrpcHelper {
                 // the span may have already been ended by another listener on a different thread/stack
                 clientCallListenerSpans.remove(listener);
                 span = null;
-            } else if (span == GlobalTracer.get().getActiveSpan()) {
+            } else if (span == GlobalTracer.get().require(Tracer.class).getActiveSpan()) {
                 // avoid duplicated activation and invocation on nested listener method calls
                 span = null;
             } else {
