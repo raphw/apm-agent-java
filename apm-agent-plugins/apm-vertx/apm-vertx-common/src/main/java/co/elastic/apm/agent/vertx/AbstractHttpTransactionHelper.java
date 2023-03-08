@@ -22,11 +22,11 @@ import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.httpserver.HttpServerHelper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.Tracer;
-import co.elastic.apm.agent.impl.context.Request;
-import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
+import co.elastic.apm.agent.tracer.metadata.Request;
+import co.elastic.apm.agent.tracer.metadata.Response;
 import co.elastic.apm.agent.util.TransactionNameUtils;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -65,7 +65,7 @@ public abstract class AbstractHttpTransactionHelper {
         this.serverHelper = new HttpServerHelper(webConfiguration);
     }
 
-    protected void startCaptureBody(Transaction transaction, String method, @Nullable String contentTypeHeader) {
+    protected void startCaptureBody(Transaction<?> transaction, String method, @Nullable String contentTypeHeader) {
         Request request = transaction.getContext().getRequest();
         if (hasBody(contentTypeHeader, method)) {
             if (coreConfiguration.getCaptureBody() != OFF
@@ -94,7 +94,7 @@ public abstract class AbstractHttpTransactionHelper {
         return METHODS_WITH_BODY.contains(method) && contentTypeHeader != null;
     }
 
-    public void applyDefaultTransactionName(String method, String pathFirstPart, @Nullable String pathSecondPart, Transaction transaction, int priorityOffset) {
+    public void applyDefaultTransactionName(String method, String pathFirstPart, @Nullable String pathSecondPart, Transaction<?> transaction, int priorityOffset) {
         // JSPs don't contain path params and the name is more telling than the generated servlet class
         if (webConfiguration.isUsePathAsName() || ENDS_WITH_JSP.matches(pathFirstPart, pathSecondPart)) {
             // should override ServletName#doGet
@@ -116,7 +116,7 @@ public abstract class AbstractHttpTransactionHelper {
      * for example when the amount of query parameters is longer than the application server allows.
      * In that case, we rather not want that the agent looks like the cause for this.
      */
-    protected void fillRequestParameters(Transaction transaction, String method, @Nullable Map<String, String[]> parameterMap, @Nullable String contentTypeHeader) {
+    protected void fillRequestParameters(Transaction<?> transaction, String method, @Nullable Map<String, String[]> parameterMap, @Nullable String contentTypeHeader) {
         Request request = transaction.getContext().getRequest();
         if (hasBody(contentTypeHeader, method)) {
             if (coreConfiguration.getCaptureBody() != OFF && parameterMap != null) {
@@ -165,13 +165,11 @@ public abstract class AbstractHttpTransactionHelper {
     }
 
     protected void fillUrlRelatedFields(Request request, @Nullable String scheme, @Nullable String serverName, int serverPort, String requestURI, @Nullable String queryString) {
-        request.getUrl().resetState();
-        request.getUrl()
-            .withProtocol(scheme)
-            .withHostname(serverName)
-            .withPort(serverPort)
-            .withPathname(requestURI)
-            .withSearch(queryString);
+        request.getUrl().fillFrom(scheme,
+            serverName,
+            serverPort,
+            requestURI,
+            queryString);
     }
 
     public boolean isCaptureHeaders() {

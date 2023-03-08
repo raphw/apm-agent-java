@@ -20,11 +20,10 @@ package co.elastic.apm.agent.rabbitmq;
 
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 
 import java.util.Iterator;
 
@@ -50,7 +49,7 @@ public class MessageBatchIteratorWrapper implements Iterator<Message> {
 
     public void endCurrentTransaction() {
         try {
-            Transaction transaction = tracer.currentTransaction();
+            Transaction<?> transaction = tracer.currentTransaction();
             if (transaction != null && "messaging".equals(transaction.getType())) {
                 transaction.deactivate().end();
             }

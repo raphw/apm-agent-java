@@ -21,7 +21,7 @@ package co.elastic.apm.agent.awssdk.common;
 
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.tracer.dispatch.TextHeaderGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +62,8 @@ public abstract class AbstractMessageIteratorWrapper<Message> implements Iterato
     }
 
     @Nullable
-    public Transaction endCurrentTransaction() {
-        Transaction transaction = null;
+    public Transaction<?> endCurrentTransaction() {
+        Transaction<?> transaction = null;
         try {
             transaction = tracer.currentTransaction();
             if (transaction != null && MESSAGING_TYPE.equals(transaction.getType())) {
@@ -89,7 +89,7 @@ public abstract class AbstractMessageIteratorWrapper<Message> implements Iterato
 
     @Override
     public Message next() {
-        Transaction currentTransaction = endCurrentTransaction();
+        Transaction<?> currentTransaction = endCurrentTransaction();
         Message sqsMessage = delegate.next();
         if (currentTransaction == null) {
             sqsInstrumentationHelper.startTransactionOnMessage(sqsMessage, queueName, textHeaderGetter);

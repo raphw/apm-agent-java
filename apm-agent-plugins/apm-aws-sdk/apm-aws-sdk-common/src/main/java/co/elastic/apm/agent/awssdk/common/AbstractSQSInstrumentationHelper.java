@@ -24,7 +24,7 @@ import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -137,7 +137,7 @@ public abstract class AbstractSQSInstrumentationHelper<R, C, MessageT> extends A
         AbstractSpan<?> activeSpan = tracer.getActive();
 
         if (isReceiveMessageRequest(request) && messagingConfiguration.shouldEndMessagingTransactionOnPoll() && activeSpan instanceof Transaction) {
-            Transaction transaction = (Transaction) activeSpan;
+            Transaction<?> transaction = (Transaction<?>) activeSpan;
             if (MESSAGING_TYPE.equals(transaction.getType())) {
                 transaction.deactivate().end();
                 return null;
@@ -157,7 +157,7 @@ public abstract class AbstractSQSInstrumentationHelper<R, C, MessageT> extends A
     public void startTransactionOnMessage(MessageT sqsMessage, String queueName, TextHeaderGetter<MessageT> headerGetter) {
         try {
             if (!WildcardMatcher.isAnyMatch(messagingConfiguration.getIgnoreMessageQueues(), queueName)) {
-                Transaction transaction = tracer.startChildTransaction(sqsMessage, headerGetter, PrivilegedActionUtils.getClassLoader(AbstractSQSInstrumentationHelper.class));
+                Transaction<?> transaction = tracer.startChildTransaction(sqsMessage, headerGetter, PrivilegedActionUtils.getClassLoader(AbstractSQSInstrumentationHelper.class));
                 if (transaction != null) {
                     transaction.withType(MESSAGING_TYPE).withName("SQS RECEIVE from " + queueName).activate();
                     transaction.setFrameworkName(FRAMEWORK_NAME);

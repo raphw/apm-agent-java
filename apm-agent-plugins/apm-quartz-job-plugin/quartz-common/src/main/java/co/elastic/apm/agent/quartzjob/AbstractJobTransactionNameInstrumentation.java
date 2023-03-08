@@ -25,7 +25,7 @@ import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
 import co.elastic.apm.agent.util.VersionUtils;
 import net.bytebuddy.description.NamedElement;
@@ -74,8 +74,8 @@ public abstract class AbstractJobTransactionNameInstrumentation extends TracerAw
         private static final Logger logger = LoggerFactory.getLogger(BaseAdvice.class);
 
         @Nullable
-        protected static <T> Transaction createAndActivateTransaction(@Nullable T jobExecutionContext, String signature, Class<?> clazz, JobExecutionContextHandler<T> helper) {
-            Transaction transaction = null;
+        protected static <T> Transaction<?> createAndActivateTransaction(@Nullable T jobExecutionContext, String signature, Class<?> clazz, JobExecutionContextHandler<T> helper) {
+            Transaction<?> transaction = null;
             AbstractSpan<?> active = tracer.getActive();
             if (active == null) {
                 String transactionName = null;
@@ -99,7 +99,7 @@ public abstract class AbstractJobTransactionNameInstrumentation extends TracerAw
                                                  @Nullable Throwable t,
                                                  JobExecutionContextHandler<T> helper) {
             if (transactionObj instanceof Transaction) {
-                Transaction transaction = (Transaction) transactionObj;
+                Transaction<?> transaction = (Transaction<?>) transactionObj;
                 if (jobExecutionContext != null) {
                     Object result = helper.getResult(jobExecutionContext);
                     if (result != null) {
@@ -114,8 +114,8 @@ public abstract class AbstractJobTransactionNameInstrumentation extends TracerAw
         }
 
         @Nullable
-        private static Transaction createAndActivateTransaction(Class<?> originClass, String name) {
-            Transaction transaction = GlobalTracer.get().require(Tracer.class).startRootTransaction(PrivilegedActionUtils.getClassLoader(originClass));
+        private static Transaction<?> createAndActivateTransaction(Class<?> originClass, String name) {
+            Transaction<?> transaction = GlobalTracer.get().require(Tracer.class).startRootTransaction(PrivilegedActionUtils.getClassLoader(originClass));
             if (transaction != null) {
                 transaction.withName(name)
                     .withType(AbstractJobTransactionNameInstrumentation.TRANSACTION_TYPE)

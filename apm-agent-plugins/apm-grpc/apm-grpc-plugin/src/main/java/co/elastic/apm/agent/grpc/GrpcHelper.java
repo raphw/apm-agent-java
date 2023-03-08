@@ -25,7 +25,7 @@ import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakConcurrent;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakMap;
 import co.elastic.apm.agent.tracer.dispatch.AbstractHeaderGetter;
@@ -73,12 +73,12 @@ public class GrpcHelper {
     /**
      * Map of all in-flight {@link Transaction} with {@link ServerCall.Listener} instance as key.
      */
-    private final WeakMap<ServerCall.Listener<?>, Transaction> serverListenerTransactions;
+    private final WeakMap<ServerCall.Listener<?>, Transaction<?>> serverListenerTransactions;
 
     /**
      * Map of all in-flight {@link Transaction} with {@link ServerCall} instance as key.
      */
-    private final WeakMap<ServerCall<?, ?>, Transaction> serverCallTransactions;
+    private final WeakMap<ServerCall<?, ?>, Transaction<?>> serverCallTransactions;
 
     /**
      * gRPC header cache used to minimize allocations
@@ -114,7 +114,7 @@ public class GrpcHelper {
      * @return transaction, or {@literal null} if none has been created
      */
     @Nullable
-    public Transaction startTransaction(Tracer tracer, ClassLoader cl, ServerCall<?, ?> serverCall, Metadata headers) {
+    public Transaction<?> startTransaction(Tracer tracer, ClassLoader cl, ServerCall<?, ?> serverCall, Metadata headers) {
         MethodDescriptor<?, ?> methodDescriptor = serverCall.getMethodDescriptor();
 
         // ignore non-unary method calls for now
@@ -128,7 +128,7 @@ public class GrpcHelper {
             return null;
         }
 
-        Transaction transaction = tracer.startChildTransaction(headers, headerGetter, cl);
+        Transaction<?> transaction = tracer.startChildTransaction(headers, headerGetter, cl);
         if (transaction == null) {
             return null;
         }
@@ -148,7 +148,7 @@ public class GrpcHelper {
      * @param listener    server call listener
      * @param transaction transaction
      */
-    public void registerTransaction(ServerCall<?, ?> serverCall, ServerCall.Listener<?> listener, Transaction transaction) {
+    public void registerTransaction(ServerCall<?, ?> serverCall, ServerCall.Listener<?> listener, Transaction<?> transaction) {
         serverCallTransactions.put(serverCall, transaction);
         serverListenerTransactions.put(listener, transaction);
         transaction.deactivate();
@@ -163,7 +163,7 @@ public class GrpcHelper {
      * @param serverCall server call
      */
     public void exitServerCall(Status status, @Nullable Throwable thrown, ServerCall<?, ?> serverCall) {
-        Transaction transaction = serverCallTransactions.remove(serverCall);
+        Transaction<?> transaction = serverCallTransactions.remove(serverCall);
 
         if (transaction != null) {
             // there are multiple ways to terminate transaction, which aren't mutually exclusive
@@ -217,8 +217,8 @@ public class GrpcHelper {
      * @return transaction, or {@literal null} if there is none
      */
     @Nullable
-    public Transaction enterServerListenerMethod(ServerCall.Listener<?> listener) {
-        Transaction transaction = serverListenerTransactions.get(listener);
+    public Transaction<?> enterServerListenerMethod(ServerCall.Listener<?> listener) {
+        Transaction<?> transaction = serverListenerTransactions.get(listener);
         if (transaction != null) {
             transaction.activate();
         }
@@ -235,7 +235,7 @@ public class GrpcHelper {
      */
     public void exitServerListenerMethod(@Nullable Throwable thrown,
                                          ServerCall.Listener<?> listener,
-                                         @Nullable Transaction transaction,
+                                         @Nullable Transaction<?> transaction,
                                          @Nullable Status terminateStatus) {
 
         if (transaction == null) {

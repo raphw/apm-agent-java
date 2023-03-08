@@ -23,17 +23,17 @@ import co.elastic.apm.agent.httpserver.HttpServerHelper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.Tracer;
-import co.elastic.apm.agent.impl.context.Request;
-import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.context.web.ResultUtil;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakConcurrent;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakMap;
+import co.elastic.apm.agent.tracer.metadata.PotentiallyMultiValuedMap;
+import co.elastic.apm.agent.tracer.metadata.Request;
+import co.elastic.apm.agent.tracer.metadata.Response;
 import co.elastic.apm.agent.util.LoggerUtils;
-import co.elastic.apm.agent.util.PotentiallyMultiValuedMap;
 import co.elastic.apm.agent.util.PrivilegedActionUtils;
 import co.elastic.apm.agent.util.TransactionNameUtils;
 import org.reactivestreams.Publisher;
@@ -90,9 +90,9 @@ public class WebfluxHelper {
 
 
     @Nullable
-    public static Transaction getOrCreateTransaction(Tracer tracer, ServerWebExchange exchange) {
+    public static Transaction<?> getOrCreateTransaction(Tracer tracer, ServerWebExchange exchange) {
 
-        Transaction transaction = WebfluxServletHelper.getServletTransaction(exchange);
+        Transaction<?> transaction = WebfluxServletHelper.getServletTransaction(exchange);
         boolean fromServlet = transaction != null;
 
         String path = exchange.getRequest().getPath().value();
@@ -119,11 +119,11 @@ public class WebfluxHelper {
         return Boolean.TRUE == exchange.getAttributes().get(SERVLET_TRANSACTION);
     }
 
-    public static <T> Mono<T> wrapDispatcher(Mono<T> mono, Transaction transaction, ServerWebExchange exchange) {
+    public static <T> Mono<T> wrapDispatcher(Mono<T> mono, Transaction<?> transaction, ServerWebExchange exchange) {
         return doWrap(mono, transaction, exchange, "webflux-dispatcher");
     }
 
-    private static <T> Mono<T> doWrap(Mono<T> mono, final Transaction transaction, final ServerWebExchange exchange, final String description) {
+    private static <T> Mono<T> doWrap(Mono<T> mono, final Transaction<?> transaction, final ServerWebExchange exchange, final String description) {
         //noinspection Convert2Lambda,rawtypes,Convert2Diamond
         mono = mono.transform(Operators.liftPublisher(new BiFunction<Publisher, CoreSubscriber<? super T>, CoreSubscriber<? super T>>() {
             @Override // liftPublisher too (or whole transform param)
@@ -147,7 +147,7 @@ public class WebfluxHelper {
         return mono;
     }
 
-    public static void endTransaction(@Nullable Throwable thrown, @Nullable Transaction transaction, ServerWebExchange exchange) {
+    public static void endTransaction(@Nullable Throwable thrown, @Nullable Transaction<?> transaction, ServerWebExchange exchange) {
         if (transaction == null) {
             // already discarded
             return;
@@ -181,7 +181,7 @@ public class WebfluxHelper {
         }
     }
 
-    public static void setTransactionName(@Nullable Transaction transaction, ServerWebExchange exchange) {
+    public static void setTransactionName(@Nullable Transaction<?> transaction, ServerWebExchange exchange) {
         if (transaction == null) {
             return;
         }
@@ -249,7 +249,7 @@ public class WebfluxHelper {
         return false;
     }
 
-    private static void fillRequest(Transaction transaction, ServerWebExchange exchange) {
+    private static void fillRequest(Transaction<?> transaction, ServerWebExchange exchange) {
         ServerHttpRequest serverRequest = exchange.getRequest();
         Request request = transaction.getContext().getRequest();
 
@@ -270,7 +270,7 @@ public class WebfluxHelper {
 
     }
 
-    private static void fillResponse(Transaction transaction, ServerWebExchange exchange) {
+    private static void fillResponse(Transaction<?> transaction, ServerWebExchange exchange) {
         ServerHttpResponse serverResponse = exchange.getResponse();
         int status = 0;
         try {

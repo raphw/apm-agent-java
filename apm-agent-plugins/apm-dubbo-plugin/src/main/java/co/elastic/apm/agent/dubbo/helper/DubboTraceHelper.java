@@ -21,7 +21,7 @@ package co.elastic.apm.agent.dubbo.helper;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.tracer.metadata.Destination;
 
 import javax.annotation.Nullable;
@@ -65,8 +65,13 @@ public class DubboTraceHelper {
         return span.activate();
     }
 
-    public static void fillTransaction(Transaction transaction, Class<?> apiClass, String methodName) {
-        transaction.updateName(apiClass, methodName);
-        transaction.withType(Transaction.TYPE_REQUEST);
+    public static void fillTransaction(Transaction<?> transaction, Class<?> apiClass, String methodName) {
+        StringBuilder spanName = transaction.getAndOverrideName(co.elastic.apm.agent.impl.transaction.Transaction.PRIO_DEFAULT);
+        if (spanName != null) {
+            String className = apiClass.getName();
+            spanName.append(className, className.lastIndexOf('.') + 1, className.length());
+            spanName.append("#").append(methodName);
+        }
+        transaction.withType(co.elastic.apm.agent.impl.transaction.Transaction.TYPE_REQUEST);
     }
 }

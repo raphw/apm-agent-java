@@ -22,7 +22,7 @@ import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Outcome;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.util.TransactionNameUtils;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionProxy;
@@ -36,7 +36,7 @@ public class ActionProxyAdvice {
 
     @Advice.OnMethodEnter(suppress = Throwable.class, inline = false)
     public static Object onEnterExecute(@Advice.This ActionProxy actionProxy) {
-        Transaction transaction = GlobalTracer.get().require(Tracer.class).currentTransaction();
+        Transaction<?> transaction = GlobalTracer.get().require(Tracer.class).currentTransaction();
         if (transaction == null) {
             return null;
         }

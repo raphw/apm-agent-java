@@ -20,7 +20,7 @@ package co.elastic.apm.agent.jsf;
 
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.matcher.ElementMatcher;
 
@@ -56,7 +56,7 @@ public abstract class AbstractJsfLifecycleExecuteInstrumentation extends Abstrac
                     return null;
                 }
             }
-            Transaction transaction = tracer.currentTransaction();
+            Transaction<?> transaction = tracer.currentTransaction();
             if (transaction != null) {
                 try {
                     if (withExternalContext) {

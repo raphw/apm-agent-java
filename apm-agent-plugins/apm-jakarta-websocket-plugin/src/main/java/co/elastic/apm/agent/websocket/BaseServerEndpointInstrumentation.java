@@ -22,7 +22,7 @@ import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.tracer.Outcome;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.method.MethodDescription;
@@ -83,9 +83,9 @@ public abstract class BaseServerEndpointInstrumentation extends TracerAwareInstr
 
         @Nullable
         protected static Object startTransactionOrSetTransactionName(String signature, String frameworkName, @Nullable String frameworkVersion) {
-            Transaction currentTransaction = tracer.currentTransaction();
+            Transaction<?> currentTransaction = tracer.currentTransaction();
             if (currentTransaction == null) {
-                Transaction rootTransaction = tracer.startRootTransaction(Thread.currentThread().getContextClassLoader());
+                Transaction<?> rootTransaction = tracer.startRootTransaction(Thread.currentThread().getContextClassLoader());
                 if (rootTransaction != null) {
                     setTransactionTypeAndName(rootTransaction, signature, frameworkName, frameworkVersion);
                     return rootTransaction.activate();
@@ -102,7 +102,7 @@ public abstract class BaseServerEndpointInstrumentation extends TracerAwareInstr
                 return;
             }
 
-            Transaction transaction = (Transaction) transactionOrNull;
+            Transaction<?> transaction = (Transaction<?>) transactionOrNull;
             try {
                 if (t != null) {
                     transaction.captureException(t).withOutcome(Outcome.FAILURE);
@@ -112,8 +112,8 @@ public abstract class BaseServerEndpointInstrumentation extends TracerAwareInstr
             }
         }
 
-        private static void setTransactionTypeAndName(Transaction transaction, String signature, String frameworkName, @Nullable String frameworkVersion) {
-            transaction.withType(Transaction.TYPE_REQUEST);
+        private static void setTransactionTypeAndName(Transaction<?> transaction, String signature, String frameworkName, @Nullable String frameworkVersion) {
+            transaction.withType(co.elastic.apm.agent.impl.transaction.Transaction.TYPE_REQUEST);
             transaction.withName(signature, PRIO_HIGH_LEVEL_FRAMEWORK, false);
             transaction.setFrameworkName(frameworkName);
             transaction.setFrameworkVersion(frameworkVersion);

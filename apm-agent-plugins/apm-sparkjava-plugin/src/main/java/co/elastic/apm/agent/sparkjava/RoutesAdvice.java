@@ -21,7 +21,7 @@ package co.elastic.apm.agent.sparkjava;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.context.web.WebConfiguration;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.util.TransactionNameUtils;
 import co.elastic.apm.agent.util.VersionUtils;
 import net.bytebuddy.asm.Advice;
@@ -36,7 +36,7 @@ public class RoutesAdvice {
 
     @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
     public static void onExitFind(@Advice.Return RouteMatch routeMatch) {
-        Transaction transaction = tracer.currentTransaction();
+        Transaction<?> transaction = tracer.currentTransaction();
         if (transaction == null || routeMatch == null) {
             return;
         }

@@ -23,7 +23,7 @@ import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.tracer.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -70,7 +70,7 @@ public class KafkaConsumerInstrumentation extends BaseKafkaInstrumentation {
             }
 
             if (messagingConfiguration.shouldEndMessagingTransactionOnPoll() && activeSpan instanceof Transaction) {
-                Transaction transaction = (Transaction) activeSpan;
+                Transaction<?> transaction = (Transaction<?>) activeSpan;
                 if ("messaging".equals(transaction.getType())) {
                     transaction.deactivate().end();
                     return;

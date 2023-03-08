@@ -24,7 +24,7 @@ import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.rabbitmq.header.SpringRabbitMQTextHeaderGetter;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -75,7 +75,7 @@ public class SpringAmqpBatchMessageListenerInstrumentation extends SpringBaseIns
                                              @Advice.Argument(0) @Nullable final List<Message> messageBatch) {
 
             List<Message> processedBatch = messageBatch;
-            Transaction batchTransaction = null;
+            Transaction<?> batchTransaction = null;
 
             if (tracer.isRunning() && messageBatch != null && !messageBatch.isEmpty()) {
                 AbstractSpan<?> active = tracer.getActive();
@@ -115,7 +115,7 @@ public class SpringAmqpBatchMessageListenerInstrumentation extends SpringBaseIns
         @Advice.OnMethodExit(suppress = Throwable.class, onThrowable = Throwable.class, inline = false)
         public static void afterOnBatch(@Advice.Enter @Nullable Object[] enter,
                                         @Advice.Thrown @Nullable Throwable throwable) {
-            Transaction batchTransaction = enter != null ? (Transaction) enter[1] : null;
+            Transaction<?> batchTransaction = enter != null ? (Transaction<?>) enter[1] : null;
             if (batchTransaction != null) {
                 try {
                     batchTransaction

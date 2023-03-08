@@ -22,7 +22,7 @@ import co.elastic.apm.agent.bci.TracerAwareInstrumentation;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Transaction;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.method.MethodDescription;
@@ -125,7 +125,7 @@ public abstract class JaxRsTransactionNameInstrumentation extends TracerAwareIns
             .isUseJaxRsPathForTransactionName();
 
         protected static void setTransactionName(String signature, @Nullable String pathAnnotationValue, @Nullable String frameworkVersion) {
-            final Transaction transaction = TracerAwareInstrumentation.tracer.currentTransaction();
+            final Transaction<?> transaction = TracerAwareInstrumentation.tracer.currentTransaction();
             if (transaction != null) {
                 String transactionName = signature;
                 if (useAnnotationValueForTransactionName) {
