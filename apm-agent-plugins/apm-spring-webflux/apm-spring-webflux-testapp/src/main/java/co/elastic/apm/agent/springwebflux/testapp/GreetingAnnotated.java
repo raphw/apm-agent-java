@@ -173,7 +173,7 @@ public class GreetingAnnotated {
             // by reactor plugin, but only by the webflux plugin that keeps the transaction active.
             ElasticApmTracer tracer = GlobalTracer.get().require(ElasticApmTracer.class);
             Transaction transaction = Objects.requireNonNull(tracer.currentTransaction(), "active transaction is required");
-            // This mimics setting the name through the public API. We cannot use the public API if we want to test Span<?> recycling
+            // This mimics setting the name through the public API. We cannot use the public API if we want to test span recycling
             transaction.withName("user-provided-name", AbstractSpan.PRIO_USER_SUPPLIED);
 
 

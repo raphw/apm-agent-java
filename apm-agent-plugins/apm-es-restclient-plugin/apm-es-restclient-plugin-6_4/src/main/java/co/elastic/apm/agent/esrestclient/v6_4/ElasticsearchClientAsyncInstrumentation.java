@@ -82,7 +82,7 @@ public class ElasticsearchClientAsyncInstrumentation extends ElasticsearchRestCl
             if (entryArgs != null) {
                 final Span<?> span = (Span<?>) entryArgs[0];
                 if (span != null) {
-                    // Deactivate in this thread. Span<?> will be ended and reported by the listener
+                    // Deactivate in this thread. Span will be ended and reported by the listener
                     span.deactivate();
                 }
             }

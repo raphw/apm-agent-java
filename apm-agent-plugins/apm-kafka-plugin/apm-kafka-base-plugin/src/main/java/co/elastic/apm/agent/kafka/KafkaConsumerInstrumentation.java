@@ -36,7 +36,7 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
 /**
  * Instruments the public {@link org.apache.kafka.clients.consumer.KafkaConsumer#poll} methods.
  * The entry advice is identical for new and old clients, however the exit advice is not - in non-legacy clients, which already support
- * record headers, we want to add Span<?> links. Therefore, we have two exit advices.
+ * record headers, we want to add span links. Therefore, we have two exit advices.
  */
 public class KafkaConsumerInstrumentation extends BaseKafkaInstrumentation {
 

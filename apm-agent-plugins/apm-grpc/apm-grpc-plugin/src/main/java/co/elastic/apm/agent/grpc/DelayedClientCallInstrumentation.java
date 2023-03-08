@@ -32,9 +32,9 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * placeholder {@code DelayedClientCall} instance with the real client call.
  * {@code setRealCall()} was chosen over {@code setCall()} because it ensures atomicity.
  * We need to do it this way because prior to 1.35, the creation of the real client call instance could be nested
- * within the creation of the {@code DelayedClientCall}, in which case a single client Span<?> would have been created
+ * within the creation of the {@code DelayedClientCall}, in which case a single client span would have been created
  * for both and we need to replace the mapped key. In later versions, the real and delayed client call instances are
- * created on different stacks, leading to a Span<?> per client call, in which case we need to discard the one
+ * created on different stacks, leading to a span per client call, in which case we need to discard the one
  * corresponding the delayed call.
  */
 public class DelayedClientCallInstrumentation extends BaseInstrumentation {

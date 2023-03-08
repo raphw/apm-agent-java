@@ -152,7 +152,7 @@ public class JmsInstrumentationHelper {
     }
 
     public void makeChildOf(Transaction<?> childTransaction, Message parentMessage) {
-        // TODO Rafael TraceContext.<Message>getFromTraceContextTextHeaders().asChildOf(childTransaction.getTraceContext(), parentMessage, JmsMessagePropertyAccessor.instance());
+        childTransaction.addLink(JmsMessagePropertyAccessor.instance(), parentMessage);
     }
 
     @Nullable

@@ -104,7 +104,7 @@ public class JdbcHelper {
         // setting the type here is important
         // getting the meta data can result in another jdbc call
         // if that is traced as well -> StackOverflowError
-        // to work around that, isAlreadyMonitored checks if the parent Span<?> is a db Span<?> and ignores them
+        // to work around that, isAlreadyMonitored checks if the parent span is a db span and ignores them
         span.withType(DB_SPAN_TYPE);
 
         // write fields that do not rely on metadata
@@ -145,8 +145,8 @@ public class JdbcHelper {
             return false;
         }
         Span<?> parentSpan = (Span<?>) parent;
-        // a db Span<?> can't be the child of another db span
-        // this means the Span<?> has already been created for this db call
+        // a db span can't be the child of another db span
+        // this means the span has already been created for this db call
         return parentSpan.getType() != null && parentSpan.getType().equals(DB_SPAN_TYPE);
     }
 

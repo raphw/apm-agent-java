@@ -134,7 +134,7 @@ public abstract class HttpUrlConnectionInstrumentation extends TracerAwareInstru
                                 .end();
                         }
                     } else {
-                        // if connect or getOutputStream has been called we can't end the Span<?> right away
+                        // if connect or getOutputStream has been called we can't end the span right away
                         // we have to store associate it with thiz HttpURLConnection instance and end once getInputStream has been called
                         // note that this could happen on another thread
                         inFlightSpans.put(thiz, span);

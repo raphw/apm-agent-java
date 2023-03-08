@@ -74,7 +74,7 @@ public class JavaConcurrent {
     /**
      * Retrieves the context mapped to the provided task and activates it on the current thread.
      * It is the responsibility of the caller to deactivate the returned context at the right time.
-     * If the mapped context is already the active Span<?> of this thread, this method returns {@code null}.
+     * If the mapped context is already the active span of this thread, this method returns {@code null}.
      * @param o a task for which running there may be a context to activate
      * @param tracer the tracer
      * @return the context mapped to the provided task or {@code null} if such does not exist or if the mapped context
@@ -125,7 +125,7 @@ public class JavaConcurrent {
     private static void captureContext(Object task, AbstractSpan<?> active) {
         DynamicTransformer.ensureInstrumented(task.getClass(), RUNNABLE_CALLABLE_FJTASK_INSTRUMENTATION);
         contextMap.put(task, active);
-        // Do no discard branches leading to async operations so not to break Span<?> references
+        // Do no discard branches leading to async operations so not to break span references
         active.setNonDiscardable();
     }
 

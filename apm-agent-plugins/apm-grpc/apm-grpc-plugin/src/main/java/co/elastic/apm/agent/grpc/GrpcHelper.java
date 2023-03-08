@@ -270,7 +270,7 @@ public class GrpcHelper {
         serverListenerTransactions.remove(listener);
     }
 
-    // exit Span<?> management (client part)
+    // exit span management (client part)
 
     /**
      * Called at the entry to {@link io.grpc.Channel#newCall(MethodDescriptor, CallOptions)}.
@@ -278,10 +278,10 @@ public class GrpcHelper {
      * <br>
      * This is the first method called during a client call execution, the next is {@link #onClientCallCreationExit(ClientCall, Span)}.
      *
-     * @param parent    parent transaction, or parent Span<?> provided by {@link Tracer#getActive()}.
+     * @param parent    parent transaction, or parent span provided by {@link Tracer#getActive()}.
      * @param method    method descriptor
      * @param authority channel authority string (host+port)
-     * @return client call Span<?> (activated) or {@literal null} if not within an exit span.
+     * @return client call span (activated) or {@literal null} if not within an exit span.
      */
     @Nullable
     public Span<?> onClientCallCreationEntry(@Nullable AbstractSpan<?> parent,
@@ -299,7 +299,7 @@ public class GrpcHelper {
 
         Span<?> span = parent.createExitSpan();
         if (span == null) {
-            // as it's an external call, we only need a single Span<?> for nested calls
+            // as it's an external call, we only need a single span for nested calls
             return null;
         }
 
@@ -320,12 +320,12 @@ public class GrpcHelper {
 
     /**
      * Called at the exit from {@link io.grpc.Channel#newCall(MethodDescriptor, CallOptions)}.
-     * Registers (and deactivates) Span<?> in internal storage for lookup by client call.
+     * Registers (and deactivates) spans in internal storage for lookup by client call.
      * <br>
      * This is the 2nd method called during client call execution, the next is {@link #clientCallStartEnter(ClientCall, ClientCall.Listener, Metadata)}.
      *
      * @param clientCall    client call
-     * @param spanFromEntry Span<?> created at {@link #onClientCallCreationEntry(AbstractSpan, MethodDescriptor, String)}
+     * @param spanFromEntry span created at {@link #onClientCallCreationEntry(AbstractSpan, MethodDescriptor, String)}
      */
     public void onClientCallCreationExit(@Nullable ClientCall<?, ?> clientCall, @Nullable Span<?> spanFromEntry) {
         if (clientCall != null) {
@@ -364,19 +364,19 @@ public class GrpcHelper {
     }
 
     /**
-     * Fixes the Span<?> mapping for the "real" client call based on the Span<?> that is already mapped to the corresponding
+     * Fixes the span mapping for the "real" client call based on the span that is already mapped to the corresponding
      * placeholder {@code io.grpc.internal.DelayedClientCall}.
      * <br>
      * This replacement must take into account two options:
      * <ul>
      *     <li>
-     *         a Span<?> was created for each the placeholder and the real call, in which case we use the placeholder span
+     *         a span was created for each the placeholder and the real call, in which case we use the placeholder span
      *         (which was created first) and discard the one created for the real call
      *     </li>
      *     <li>
-     *         a single Span<?> was created and either mapped for both the placeholder and the real call (theoretical),
+     *         a single span was created and either mapped for both the placeholder and the real call (theoretical),
      *         in which case we need to do nothing, or mapped only to the placeholder, in which case we need to add a
-     *         Span<?> mapping for the real client call
+     *         span mapping for the real client call
      *     </li>
      * </ul>
      *
@@ -385,7 +385,7 @@ public class GrpcHelper {
      * @param realClientCall        the client call instance that represents the actual client call
      */
     public void replaceClientCallRegistration(ClientCall<?, ?> placeholderClientCall, ClientCall<?, ?> realClientCall) {
-        // we cannot remove yet, because the Span<?> could have been ended already through ClientCall#start(), in which case
+        // we cannot remove yet, because the span could have been ended already through ClientCall#start(), in which case
         // it will be recycled ahead of time due to reference decrement when removed from the map
         Span<?> spanOfPlaceholder = delayedClientCallSpans.get(placeholderClientCall);
         if (spanOfPlaceholder == null) {
@@ -393,21 +393,21 @@ public class GrpcHelper {
         }
 
         try {
-            // we cannot remove yet, because the Span<?> could have been ended already, in which case
+            // we cannot remove yet, because the span could have been ended already, in which case
             // it will be recycled ahead of time due to reference decrement when removed from the map
             Span<?> spanOfRealClientCall = clientCallSpans.get(realClientCall);
             boolean mapPlaceholderSpanToRealClientCall = false;
             if (spanOfRealClientCall == null) {
                 mapPlaceholderSpanToRealClientCall = true;
             } else if (spanOfRealClientCall != spanOfPlaceholder) {
-                // the placeholder Span<?> is the one we want to use, we need to discard the real call span
+                // the placeholder span is the one we want to use, we need to discard the real call span
                 if (!spanOfRealClientCall.isFinished()) {
                     spanOfRealClientCall
                         .requestDiscarding()
                         // no need to deactivate
                         .end();
                 }
-                // the discarded Span<?> will be removed when replaced with the correct span
+                // the discarded span will be removed when replaced with the correct span
                 mapPlaceholderSpanToRealClientCall = true;
             } else if (spanOfRealClientCall.isFinished()) {
                 // the real client call is already mapped to the correct span, but it is already ended, so needs to be removed
@@ -438,7 +438,7 @@ public class GrpcHelper {
                                      ClientCall.Listener<?> listener,
                                      Metadata headers) {
 
-        // Span<?> should already have been registered
+        // span should already have been registered
         // no other lookup by client call is required, thus removing entry
         Span<?> span = clientCallSpans.remove(clientCall);
         if (span == null) {
@@ -457,7 +457,7 @@ public class GrpcHelper {
     /**
      * Performs client call start cleanup in case of exception
      *
-     * @param spanFromEntry Span<?> created by {@link #clientCallStartEnter(ClientCall, ClientCall.Listener, Metadata)}
+     * @param spanFromEntry span created by {@link #clientCallStartEnter(ClientCall, ClientCall.Listener, Metadata)}
      * @param listener      client call listener
      * @param thrown        thrown exception
      */
@@ -466,7 +466,7 @@ public class GrpcHelper {
             spanFromEntry.deactivate();
         }
         if (thrown != null) {
-            // when there is an exception, we have to end Span<?> and perform some cleanup
+            // when there is an exception, we have to end span and perform some cleanup
             clientCallListenerSpans.remove(listener);
             if (spanFromEntry != null) {
                 spanFromEntry.withOutcome(Outcome.FAILURE)
@@ -491,17 +491,17 @@ public class GrpcHelper {
     }
 
     /**
-     * Lookup and activate Span<?> when entering listener method execution
+     * Lookup and activate span when entering listener method execution
      *
      * @param listener client call listener
-     * @return active Span<?> or {@literal null} if there is none
+     * @return active span or {@literal null} if there is none
      */
     @Nullable
     public Span<?> enterClientListenerMethod(ClientCall.Listener<?> listener) {
         Span<?> span = clientCallListenerSpans.get(listener);
         if (span != null) {
             if (span.isFinished()) {
-                // the Span<?> may have already been ended by another listener on a different thread/stack
+                // the span may have already been ended by another listener on a different thread/stack
                 clientCallListenerSpans.remove(listener);
                 span = null;
             } else if (span == GlobalTracer.get().getActive()) {
@@ -515,11 +515,11 @@ public class GrpcHelper {
     }
 
     /**
-     * De-activates active Span<?> when exiting listener method execution, optionally terminates Span<?> when required.
+     * De-activates active span when exiting listener method execution, optionally terminates span when required.
      *
      * @param thrown        thrown exception (if any)
      * @param listener      client call listener
-     * @param span          Span<?> reference obtained from {@link #enterClientListenerMethod(ClientCall.Listener)}
+     * @param span          span reference obtained from {@link #enterClientListenerMethod(ClientCall.Listener)}
      * @param onCloseStatus status if method is {@code onClose(...)}, {@literal null} otherwise
      */
     public void exitClientListenerMethod(@Nullable Throwable thrown,
@@ -534,7 +534,7 @@ public class GrpcHelper {
                 .deactivate();
 
             if (lastCall) {
-                // Span<?> needs to be ended when last listener method is called or on the 1st thrown exception
+                // span needs to be ended when last listener method is called or on the 1st thrown exception
                 span.withOutcome(toClientOutcome(onCloseStatus))
                     .end();
             }

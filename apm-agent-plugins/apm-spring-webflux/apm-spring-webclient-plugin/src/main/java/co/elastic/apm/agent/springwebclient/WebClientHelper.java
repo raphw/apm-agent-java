@@ -41,7 +41,7 @@ public class WebClientHelper {
             new BiFunction<Publisher, CoreSubscriber<? super T>, CoreSubscriber<? super T>>() {
                 @Override
                 public CoreSubscriber<? super T> apply(Publisher publisher, CoreSubscriber<? super T> subscriber) {
-                    log.trace("Trying to subscribe with Span<?> {}", span);
+                    log.trace("Trying to subscribe with span {}", span);
                     if (tracer.getActive() == null) {
                         return subscriber;
                     }

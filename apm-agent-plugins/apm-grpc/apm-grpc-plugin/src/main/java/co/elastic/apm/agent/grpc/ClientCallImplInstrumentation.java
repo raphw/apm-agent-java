@@ -42,8 +42,8 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
  * <br>
  * full call lifecycle is split in few sub-implementations:
  * <ul>
- *     <li>{@link Start} for client Span<?> start</li>
- *     <li>{@link ClientCallListenerInstrumentation.Close} for {@link ClientCall.Listener#onClose} for client Span<?> end</li>
+ *     <li>{@link Start} for client span start</li>
+ *     <li>{@link ClientCallListenerInstrumentation.Close} for {@link ClientCall.Listener#onClose} for client span end</li>
  *     <li>{@link ClientCallListenerInstrumentation.OtherListenerMethod} for other methods of {@link ClientCall.Listener}.
  * </ul>
  */
@@ -102,7 +102,7 @@ public abstract class ClientCallImplInstrumentation extends BaseInstrumentation 
     }
 
     /**
-     * Instruments {@link ClientCall#cancel} to end client call Span<?> upon cancellation
+     * Instruments {@link ClientCall#cancel} to end client call span upon cancellation
      */
     public static class Cancel extends ClientCallImplInstrumentation {
 

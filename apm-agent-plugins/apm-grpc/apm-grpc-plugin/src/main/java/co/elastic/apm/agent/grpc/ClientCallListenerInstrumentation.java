@@ -80,7 +80,7 @@ public abstract class ClientCallListenerInstrumentation extends BaseInstrumentat
     }
 
     /**
-     * Generic call listener method to handle Span<?> activation and capturing exceptions.
+     * Generic call listener method to handle span activation and capturing exceptions.
      * Instruments:
      * <ul>
      *     <li>{@link ClientCall.Listener#onMessage(Object)}</li>

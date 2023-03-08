@@ -56,7 +56,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
  * This instrumentation targets {@link com.twitter.finagle.http.filter.PayloadSizeFilter}.
  * In order to distinguish between HTTP and HTTPS requests, we use {@link FinagleTlsFilterInstrumentation}.
  * Sometimes the target host is not available within the PayloadSizeFilter.
- * In this case we try to enrich the Span<?> via the {@link FinagleExceptionSourceFilterInstrumentation}.
+ * In this case we try to enrich the span via the {@link FinagleExceptionSourceFilterInstrumentation}.
  */
 @SuppressWarnings("JavadocReference")
 public class FinaglePayloadSizeFilterInstrumentation extends TracerAwareInstrumentation {

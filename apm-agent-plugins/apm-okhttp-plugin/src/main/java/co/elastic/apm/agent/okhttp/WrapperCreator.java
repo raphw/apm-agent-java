@@ -34,7 +34,7 @@ public interface WrapperCreator<T> {
      * </p>
      *
      * @param delegate the actual callback which should be wrapped
-     * @param Span<?>     the currently active span
+     * @param span     the currently active span
      * @return the wrapped callback
      */
     T wrap(T delegate, Span<?> span);

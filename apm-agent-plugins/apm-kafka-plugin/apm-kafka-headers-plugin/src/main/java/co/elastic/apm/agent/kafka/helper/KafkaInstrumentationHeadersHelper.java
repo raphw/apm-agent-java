@@ -84,7 +84,7 @@ public class KafkaInstrumentationHeadersHelper {
 
     /**
      * Checks whether the provided iterable should be wrapped.
-     * If there is an active Span<?> when this method is invoked, Span<?> links are added to it based non the provided {@link ConsumerRecords}
+     * If there is an active span when this method is invoked, span links are added to it based non the provided {@link ConsumerRecords}
      * and this method returns {@code false}.
      * @param consumerRecords the {@link ConsumerRecords} object from which this method is invoked when trying to obtain an iterable
      * @param iterable the original iterable object returned by the instrumented method
@@ -104,7 +104,7 @@ public class KafkaInstrumentationHeadersHelper {
 
     public void addSpanLinks(@Nullable ConsumerRecords<?, ?> records, AbstractSpan<?> span) {
         if (records != null && !records.isEmpty()) {
-            // Avoid stack overflow by trying to re-wrap and avoid adding Span<?> links for this iteration
+            // Avoid stack overflow by trying to re-wrap and avoid adding span links for this iteration
             wrappingDisabled.set(Boolean.TRUE);
             try {
                 for (ConsumerRecord<?, ?> record : records) {

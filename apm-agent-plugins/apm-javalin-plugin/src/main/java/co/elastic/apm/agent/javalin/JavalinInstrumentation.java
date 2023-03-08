@@ -144,7 +144,7 @@ public class JavalinInstrumentation extends TracerAwareInstrumentation {
 
             final String handlerClassName = handler.getClass().getName();
 
-            // do not create an own Span<?> for JavalinServlet.addHandler, as this not added by the users code and leads to confusion
+            // do not create an own span for JavalinServlet.addHandler, as this not added by the users code and leads to confusion
             if (handlerClassName.startsWith("io.javalin.http.JavalinServlet")) {
                 return null;
             }
@@ -165,7 +165,7 @@ public class JavalinInstrumentation extends TracerAwareInstrumentation {
                 }
             }
 
-            // create own Span<?> for all handlers including after/before
+            // create own span for all handlers including after/before
             final AbstractSpan<?> parent = tracer.getActive();
             if (parent == null) {
                 return null;
@@ -191,7 +191,7 @@ public class JavalinInstrumentation extends TracerAwareInstrumentation {
                     // sync request
                     span.captureException(t).end();
                 } else {
-                    // future was set in the handler, so we need to end the Span<?> only on future completion
+                    // future was set in the handler, so we need to end the span only on future completion
                     responseFuture.whenComplete((o, futureThrowable) -> span.captureException(futureThrowable).end());
                 }
             }

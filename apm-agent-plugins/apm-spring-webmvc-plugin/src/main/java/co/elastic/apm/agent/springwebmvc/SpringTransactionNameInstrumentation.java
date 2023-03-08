@@ -46,9 +46,9 @@ import static net.bytebuddy.matcher.ElementMatchers.returns;
 import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 
 /**
- * This instrumentation sets the {@link Transaction#name} according to the handler responsible for this request.
+ * This instrumentation sets the transaction name according to the handler responsible for this request.
  * <p>
- * If the handler is a {@link org.springframework.stereotype.Controller}, the {@link Transaction#name} is set to
+ * If the handler is a {@link org.springframework.stereotype.Controller}, the transaction name is set to
  * {@code ControllerName#methodName}.
  * If it is a different kind of handler,
  * like a {@link org.springframework.web.servlet.resource.ResourceHttpRequestHandler},

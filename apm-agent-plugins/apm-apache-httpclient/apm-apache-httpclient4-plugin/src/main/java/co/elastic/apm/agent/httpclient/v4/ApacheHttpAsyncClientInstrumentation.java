@@ -116,11 +116,11 @@ public class ApacheHttpAsyncClientInstrumentation extends BaseApacheHttpClientIn
                                           @Advice.Thrown @Nullable Throwable t) {
             Span<?> span = enter != null ? (Span<?>) enter[3] : null;
             if (span != null) {
-                // Deactivate in this thread. Span<?> will be ended and reported by the listener
+                // Deactivate in this thread. Span will be ended and reported by the listener
                 span.deactivate();
 
                 if (!((Boolean) enter[2])) {
-                    // Listener is not wrapped- we need to end the Span<?> so to avoid leak and report error if occurred during method invocation
+                    // Listener is not wrapped- we need to end the span so to avoid leak and report error if occurred during method invocation
                     span.captureException(t);
                     span.end();
                 }

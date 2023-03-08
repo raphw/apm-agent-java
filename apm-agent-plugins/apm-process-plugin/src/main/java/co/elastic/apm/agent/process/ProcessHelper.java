@@ -38,7 +38,7 @@ class ProcessHelper {
 
     /**
      * A thread local used to indicate whether the currently invoked instrumented method is invoked by the plugin itself.
-     * More concretely - some Span<?> termination routes attempt to invoke {@link Process#exitValue()}, which is itself
+     * More concretely - some span termination routes attempt to invoke {@link Process#exitValue()}, which is itself
      * instrumented in order to detect process termination. When this method is invoked by the plugin itself, we want to
      * avoid applying its instrumentation logic.
      */
@@ -84,8 +84,8 @@ class ProcessHelper {
             .withType("process")
             .withName(binaryName);
 
-        // We don't require Span<?> to be activated as the background process is not really linked to current thread
-        // and there won't be any child Span<?> linked to process span
+        // We don't require span to be activated as the background process is not really linked to current thread
+        // and there won't be any child span linked to process span
 
         inFlightSpans.put(process, span);
     }
@@ -99,8 +99,8 @@ class ProcessHelper {
      * Ends process span
      *
      * @param process                process that is being terminated
-     * @param checkTerminatedProcess if {@code true}, will only terminate Span<?> if process is actually terminated, will
-     *                               unconditionally terminate process Span<?> otherwise
+     * @param checkTerminatedProcess if {@code true}, will only terminate span if process is actually terminated, will
+     *                               unconditionally terminate process span otherwise
      */
     void doEndProcess(Process process, boolean checkTerminatedProcess) {
 
@@ -136,7 +136,7 @@ class ProcessHelper {
     }
 
     /**
-     * Can be used to end the Span<?> corresponding the provided {@link Process} when the exit value is already known
+     * Can be used to end the span corresponding the provided {@link Process} when the exit value is already known
      * @param process       process that is being terminated
      * @param exitValue     exit value of the terminated process
      */

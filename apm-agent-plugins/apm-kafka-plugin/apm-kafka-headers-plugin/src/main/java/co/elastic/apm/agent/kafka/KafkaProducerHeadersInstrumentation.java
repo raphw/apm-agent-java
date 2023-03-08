@@ -113,7 +113,7 @@ public class KafkaProducerHeadersInstrumentation extends BaseKafkaHeadersInstrum
             }
             Object[] overrideThrowable = null;
             if (throwable != null && throwable.getMessage().contains("Magic v1 does not support record headers")) {
-                // Probably our fault - ignore Span<?> and retry. May happen when using a new client with an old (< 0.11.0)
+                // Probably our fault - ignore span and retry. May happen when using a new client with an old (< 0.11.0)
                 // broker. In such cases we DO check the version, but the first version check may be not yet up to date.
                 logger.info("Adding header to Kafka record is not allowed with the used broker, attempting to resend record");
                 ProducerRecord copy = new ProducerRecord<>(record.topic(), record.partition(), record.timestamp(),

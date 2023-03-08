@@ -21,7 +21,7 @@
  * 1. Visibility to record production and consumption events, including relevant metadata
  * 2. Distributed tracing
  * <p>
- * Capturing of record production events is trivial- can only be traced as a Span<?> within a traced transaction.
+ * Capturing of record production events is trivial- can only be traced as a span within a traced transaction.
  * Consumption is a bit trickier as it relies on the {@link org.apache.kafka.clients.consumer.KafkaConsumer#poll}
  * API. The challenge with polling APIs is that their invocation event is typically arbitrary (meaning their
  * duration is not of interest) and we really want to trace what happens AFTER they exit with a Message. Since Kafka
@@ -31,7 +31,7 @@
  * iterator is held and not immediately iterated all through, but we assume this is somewhat of an edge case.
  * As long as we can make it safe from memory leaks, this is acceptable.
  * In case the polling is executed from within a traced transaction, we won't create a transaction-per-record. Instead,
- * we will trace the polling action itself and create a Span<?> for it.
+ * we will trace the polling action itself and create a span for it.
  * <p>
  * For both produce and consume events, we capture and trace the topic name.
  * For kafka transactions, we capture record value (as long as the defined deserializer outputs text; configurable

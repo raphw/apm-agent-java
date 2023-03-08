@@ -40,7 +40,7 @@ import static net.bytebuddy.matcher.ElementMatchers.takesArgument;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 /**
- * Starts a Span<?> in {@link io.lettuce.core.RedisChannelHandler#dispatch(RedisCommand)}
+ * Starts a span in {@link io.lettuce.core.RedisChannelHandler#dispatch(RedisCommand)}
  *
  * The context will be propagated via the Netty instrumentation
  */

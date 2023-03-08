@@ -40,7 +40,7 @@ import static net.bytebuddy.matcher.ElementMatchers.named;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 /**
- * Stops the Span<?> created by {@link Lettuce5StartSpanInstrumentation} when one of the following methods are called:
+ * Stops the span created by {@link Lettuce5StartSpanInstrumentation} when one of the following methods are called:
  * <ul>
  *     <li>{@link RedisCommand#complete()}</li>
  *     <li>{@link RedisCommand#completeExceptionally(Throwable)}</li>

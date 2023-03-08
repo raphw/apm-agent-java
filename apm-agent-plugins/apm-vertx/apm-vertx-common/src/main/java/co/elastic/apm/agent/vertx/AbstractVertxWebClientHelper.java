@@ -48,8 +48,8 @@ public abstract class AbstractVertxWebClientHelper {
     public void startSpan(AbstractSpan<?> parent, HttpContext<?> httpContext, HttpClientRequest httpRequest) {
         Object existingSpanObj = httpContext.get(WEB_CLIENT_SPAN_KEY);
         if (existingSpanObj != null) {
-            // there is already an active Span<?> for this HTTP request,
-            // don't create a new Span<?> but propagate tracing headers
+            // there is already an active span for this HTTP request,
+            // don't create a new span but propagate tracing headers
             ((Span<?>) existingSpanObj).propagateTraceContext(httpRequest, HeaderSetter.INSTANCE);
         } else {
             URI requestUri = URI.create(httpRequest.absoluteURI());

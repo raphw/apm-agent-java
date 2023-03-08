@@ -268,7 +268,7 @@ public abstract class ChannelInstrumentation extends RabbitmqBaseInstrumentation
          * Creates a messaging exit span
          *
          * @param exchangeOrQueue exchange or queue name
-         * @return exit Span<?> if applicable, {@literal null} otherwise
+         * @return exit span if applicable, {@literal null} otherwise
          */
         @Nullable
         public static Span<?> createExitSpan(@Nullable String exchangeOrQueue) {
@@ -287,7 +287,7 @@ public abstract class ChannelInstrumentation extends RabbitmqBaseInstrumentation
         }
 
         /**
-         * Updates Span<?> destination
+         * Updates span destination
          *
          * @param exchange      normalized exchange name
          * @param brokerAddress broker address

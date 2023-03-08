@@ -21,7 +21,7 @@
  * 1. Visibility to JMS events like message sends and receive, including relevant metadata
  * 2. Distributed tracing
  * <p>
- * Capturing of sending event is trivial- can only be traced as a Span<?> within a traced transaction.
+ * Capturing of sending event is trivial- can only be traced as a span within a traced transaction.
  * Receive events are a bit trickier. Message receive can be passive (i.e. listening, for example through the
  * {@link javax.jms.MessageListener#onMessage(javax.jms.Message)} API) or active (i.e. polling, for example through the
  * {@link javax.jms.MessageConsumer#receive()} API).

@@ -34,7 +34,7 @@ import static net.bytebuddy.matcher.ElementMatchers.not;
 import static net.bytebuddy.matcher.ElementMatchers.takesArguments;
 
 /**
- * Starts a Span<?> in {@link com.lambdaworks.redis.RedisChannelHandler#dispatch}
+ * Starts a span in {@link com.lambdaworks.redis.RedisChannelHandler#dispatch}
  *
  * The context will be propagated via the Netty instrumentation
  */

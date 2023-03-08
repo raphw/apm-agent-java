@@ -158,10 +158,10 @@ public class SQSHelper extends AbstractSQSInstrumentationHelper<Request<?>, Exec
     }
 
     /**
-     * Enrich the Span<?> if there is already an active SQS Span<?> that has been started through dedicated instrumentation.
+     * Enrich the span if there is already an active SQS span that has been started through dedicated instrumentation.
      * Otherwise, create and start a new span.
      *
-     * @return Returns the Span<?> object if a new Span<?> has been created. Returns null if an active Span<?> has been enriched or Span<?> could not be created.
+     * @return Returns the span object if a new span has been created. Returns null if an active span has been enriched or span could not be created.
      */
     @Nullable
     @Override

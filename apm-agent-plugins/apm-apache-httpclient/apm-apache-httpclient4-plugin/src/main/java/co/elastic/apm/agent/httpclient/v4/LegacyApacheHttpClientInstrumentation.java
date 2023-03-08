@@ -134,7 +134,7 @@ public class LegacyApacheHttpClientInstrumentation extends BaseApacheHttpClientI
                 span.captureException(t);
             } finally {
                 // in case of circular redirect, we get an exception but status code won't be available without response
-                // thus we have to deal with Span<?> outcome directly
+                // thus we have to deal with span outcome directly
                 if (t instanceof CircularRedirectException) {
                     span.withOutcome(Outcome.FAILURE);
                 }
