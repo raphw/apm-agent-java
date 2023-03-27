@@ -51,4 +51,9 @@ public class WildcardMatcherMatcher extends Matcher {
     public boolean matches(CharSequence firstPart, @Nullable CharSequence secondPart) {
         return delegate.matches(firstPart, secondPart);
     }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
 }
