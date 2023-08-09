@@ -362,7 +362,7 @@ public class ElasticApmTracer implements Tracer {
 
     @Nullable
     @Override
-    public co.elastic.apm.agent.tracer.ErrorCapture getActiveError() {
+    public ErrorCapture getActiveError() {
         return ErrorCapture.getActive();
     }
 

@@ -19,10 +19,10 @@
 package co.elastic.apm.agent.pluginapi;
 
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.transaction.Id;
 import co.elastic.apm.agent.impl.transaction.TraceContext;
 import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.service.ServiceTracer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -176,7 +176,7 @@ public class TransactionInstrumentation extends ApiInstrumentation {
             public static void useServiceInfoForClassLoader(@Advice.FieldValue(value = "span", typing = Assigner.Typing.DYNAMIC) Object transaction,
                                                             @Advice.Argument(0) ClassLoader classLoader) {
                 if (transaction instanceof Transaction) {
-                    ServiceInfo serviceInfo = tracer.require(Tracer.class).getServiceInfoForClassLoader(classLoader);
+                    ServiceInfo serviceInfo = tracer.require(ServiceTracer.class).getServiceInfoForClassLoader(classLoader);
                     if (serviceInfo != null) {
                         ((Transaction) transaction).getTraceContext().setServiceInfo(serviceInfo.getServiceName(), serviceInfo.getServiceVersion());
                     }

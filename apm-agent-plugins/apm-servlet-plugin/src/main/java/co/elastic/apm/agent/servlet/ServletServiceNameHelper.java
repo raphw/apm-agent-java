@@ -19,7 +19,6 @@
 package co.elastic.apm.agent.servlet;
 
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
 import co.elastic.apm.agent.sdk.state.GlobalState;
@@ -27,6 +26,7 @@ import co.elastic.apm.agent.sdk.weakconcurrent.WeakConcurrent;
 import co.elastic.apm.agent.sdk.weakconcurrent.WeakMap;
 import co.elastic.apm.agent.servlet.adapter.ServletContextAdapter;
 import co.elastic.apm.agent.tracer.Tracer;
+import co.elastic.apm.agent.tracer.service.ServiceTracer;
 
 import javax.annotation.Nullable;
 import java.io.InputStream;
@@ -44,8 +44,8 @@ public class ServletServiceNameHelper {
                                                              @Nullable ServletContext servletContext,
                                                              Tracer tracer) {
 
-        ElasticApmTracer elasticApmTracer = tracer.probe(ElasticApmTracer.class);
-        if (elasticApmTracer == null) {
+        ServiceTracer serviceTracer = tracer.probe(ServiceTracer.class);
+        if (serviceTracer == null) {
             return;
         }
 
@@ -63,7 +63,7 @@ public class ServletServiceNameHelper {
             return;
         }
         ServiceInfo serviceInfo = detectServiceInfo(adapter, servletContext, servletContextClassLoader);
-        elasticApmTracer.setServiceInfoForClassLoader(servletContextClassLoader, serviceInfo);
+        serviceTracer.setServiceInfoForClassLoader(servletContextClassLoader, serviceInfo);
     }
 
     public static <ServletContext> ServiceInfo detectServiceInfo(ServletContextAdapter<ServletContext> adapter, ServletContext servletContext, ClassLoader servletContextClassLoader) {

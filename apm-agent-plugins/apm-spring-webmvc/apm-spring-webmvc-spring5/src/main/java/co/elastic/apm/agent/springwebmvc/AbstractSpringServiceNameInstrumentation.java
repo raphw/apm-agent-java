@@ -19,13 +19,13 @@
 package co.elastic.apm.agent.springwebmvc;
 
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
 import co.elastic.apm.agent.servlet.Constants;
 import co.elastic.apm.agent.servlet.ServletServiceNameHelper;
 import co.elastic.apm.agent.servlet.adapter.ServletContextAdapter;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Tracer;
+import co.elastic.apm.agent.tracer.service.ServiceTracer;
 import net.bytebuddy.description.NamedElement;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -76,14 +76,14 @@ public abstract class AbstractSpringServiceNameInstrumentation extends ElasticAp
 
         public static <ServletContext> void detectSpringServiceName(ServletContextAdapter<ServletContext> adapter,
                                                                     WebApplicationContext applicationContext, @Nullable ServletContext servletContext) {
-            ElasticApmTracer elasticApmTracer = tracer.probe(ElasticApmTracer.class);
-            if (elasticApmTracer == null) {
+            ServiceTracer serviceTracer = tracer.probe(ServiceTracer.class);
+            if (serviceTracer == null) {
                 return;
             }
 
             // avoid having two service names for a standalone jar
             // one based on Implementation-Title and one based on spring.application.name
-            if (!ElasticApmTracer.AUTO_DETECTED_SERVICE_INFO.isMultiServiceContainer()) {
+            if (!serviceTracer.autoDetectedServiceInfo().isMultiServiceContainer()) {
                 return;
             }
 
@@ -105,7 +105,7 @@ public abstract class AbstractSpringServiceNameInstrumentation extends ElasticAp
             ServiceInfo fromSpringApplicationNameProperty = ServiceInfo.of(applicationContext.getEnvironment().getProperty("spring.application.name", ""));
             ServiceInfo fromApplicationContextApplicationName = ServiceInfo.of(removeLeadingSlash(applicationContext.getApplicationName()));
 
-            elasticApmTracer.setServiceInfoForClassLoader(classLoader, fromSpringApplicationNameProperty
+            serviceTracer.setServiceInfoForClassLoader(classLoader, fromSpringApplicationNameProperty
                 .withFallback(fromServletContext)
                 .withFallback(fromApplicationContextApplicationName));
         }

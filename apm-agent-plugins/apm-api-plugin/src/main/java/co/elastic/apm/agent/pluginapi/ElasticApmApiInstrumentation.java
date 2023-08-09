@@ -20,11 +20,11 @@ package co.elastic.apm.agent.pluginapi;
 
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.tracer.ErrorCapture;
 import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.sdk.internal.util.PrivilegedActionUtils;
+import co.elastic.apm.agent.tracer.service.ServiceTracer;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -166,7 +166,7 @@ public class ElasticApmApiInstrumentation extends ApiInstrumentation {
         public static class AdviceClass {
             @Advice.OnMethodExit(suppress = Throwable.class, inline = false)
             public static void setServiceInfoForClassLoader(@Advice.Argument(0) @Nullable ClassLoader classLoader, @Advice.Argument(1) String serviceName, @Advice.Argument(2) @Nullable String serviceVersion) {
-                tracer.require(Tracer.class).setServiceInfoForClassLoader(classLoader, ServiceInfo.of(serviceName, serviceVersion));
+                tracer.require(ServiceTracer.class).setServiceInfoForClassLoader(classLoader, ServiceInfo.of(serviceName, serviceVersion));
             }
         }
     }
