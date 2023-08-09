@@ -983,6 +983,7 @@ public class ElasticApmTracer implements Tracer {
         return TraceContext.TRACE_TEXTUAL_HEADERS;
     }
 
+    @Override
     public ServiceInfo autoDetectedServiceInfo() {
         return AUTO_DETECTED_SERVICE_INFO;
     }

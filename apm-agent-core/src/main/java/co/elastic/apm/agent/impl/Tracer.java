@@ -29,10 +29,11 @@ import co.elastic.apm.agent.impl.transaction.Transaction;
 import co.elastic.apm.agent.tracer.dispatch.BinaryHeaderGetter;
 import co.elastic.apm.agent.tracer.dispatch.HeaderGetter;
 import co.elastic.apm.agent.tracer.dispatch.TextHeaderGetter;
+import co.elastic.apm.agent.tracer.service.ServiceTracer;
 
 import javax.annotation.Nullable;
 
-public interface Tracer extends co.elastic.apm.agent.tracer.Tracer {
+public interface Tracer extends co.elastic.apm.agent.tracer.Tracer, ServiceTracer {
 
     @Nullable
     @Override
@@ -131,21 +132,6 @@ public interface Tracer extends co.elastic.apm.agent.tracer.Tracer {
     ErrorCapture captureException(@Nullable Throwable e, @Nullable AbstractSpan<?> parent, @Nullable ClassLoader initiatingClassLoader);
 
     TracerState getState();
-
-    @Nullable
-    ServiceInfo getServiceInfoForClassLoader(@Nullable ClassLoader classLoader);
-
-    /**
-     * Sets the service name and version for all {@link Transaction}s,
-     * {@link Span}s and {@link ErrorCapture}s which are created by the service which corresponds to the provided {@link ClassLoader}.
-     * <p>
-     * The main use case is being able to differentiate between multiple services deployed to the same application server.
-     * </p>
-     *
-     * @param classLoader the class loader which corresponds to a particular service
-     * @param serviceInfo the service name and version for this class loader
-     */
-    void setServiceInfoForClassLoader(@Nullable ClassLoader classLoader, ServiceInfo serviceInfo);
 
     /**
      * Called when the container shuts down.
