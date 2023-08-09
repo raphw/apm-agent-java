@@ -16,9 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.configuration;
-
-import co.elastic.apm.agent.sdk.internal.util.PrivilegedActionUtils;
+package co.elastic.apm.agent.tracer.service;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -33,7 +31,6 @@ public class ServiceInfo {
     private static final String JAR_VERSION_SUFFIX = "-(\\d+\\.)+(\\d+)(.*)?$";
     private static final String DEFAULT_SERVICE_NAME = "unknown-java-service";
     private static final ServiceInfo EMPTY = new ServiceInfo(null, null);
-    private static final ServiceInfo AUTO_DETECTED = autoDetect(System.getProperties(), PrivilegedActionUtils.getEnv());
 
     private final String serviceName;
     @Nullable
@@ -80,10 +77,6 @@ public class ServiceInfo {
 
     private static String replaceDisallowedServiceNameChars(String serviceName) {
         return serviceName.replaceAll("[^a-zA-Z0-9 _-]", "-");
-    }
-
-    public static ServiceInfo autoDetected() {
-        return AUTO_DETECTED;
     }
 
     public static ServiceInfo autoDetect(Properties sysProperties, Map<String,String> sysEnv) {

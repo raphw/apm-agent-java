@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.pluginapi;
 
-import co.elastic.apm.agent.configuration.ServiceInfo;
+import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.impl.Tracer;
 import co.elastic.apm.agent.impl.transaction.Id;
 import co.elastic.apm.agent.impl.transaction.TraceContext;

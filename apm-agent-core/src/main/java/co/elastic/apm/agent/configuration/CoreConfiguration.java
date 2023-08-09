@@ -19,6 +19,7 @@
 package co.elastic.apm.agent.configuration;
 
 import co.elastic.apm.agent.bci.ElasticApmAgent;
+import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.configuration.ListValueConverter;
 import co.elastic.apm.agent.tracer.configuration.RoundedDoubleConverter;
 import co.elastic.apm.agent.tracer.configuration.TimeDuration;
@@ -31,6 +32,7 @@ import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.tracer.configuration.WildcardMatcherValueConverter;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import org.stagemonitor.configuration.ConfigurationOption;
 import org.stagemonitor.configuration.ConfigurationOptionProvider;
 import org.stagemonitor.configuration.converter.AbstractValueConverter;
@@ -163,7 +165,7 @@ public class CoreConfiguration extends ConfigurationOptionProvider implements co
             "NOTE: Service name auto discovery mechanisms require APM Server 7.0+.")
         .addValidator(RegexValidator.of("^[a-zA-Z0-9 _-]+$", "Your service name \"{0}\" must only contain characters " +
             "from the ASCII alphabet, numbers, dashes, underscores and spaces"))
-        .buildWithDefault(ServiceInfo.autoDetected().getServiceName());
+        .buildWithDefault(ElasticApmTracer.AUTO_DETECTED_SERVICE_INFO.getServiceName());
 
     private final ConfigurationOption<String> serviceNodeName = ConfigurationOption.stringOption()
         .key(SERVICE_NODE_NAME)
@@ -203,7 +205,7 @@ public class CoreConfiguration extends ConfigurationOptionProvider implements co
             "the agent can auto-detect the service version based on the `Implementation-Title` attribute in `META-INF/MANIFEST.MF`.\n" +
             "See <<config-service-name>> on how to set this attribute.\n" +
             "\n")
-        .defaultValue(ServiceInfo.autoDetected().getServiceVersion())
+        .defaultValue(ElasticApmTracer.AUTO_DETECTED_SERVICE_INFO.getServiceVersion())
         .build();
 
     private final ConfigurationOption<String> hostname = ConfigurationOption.stringOption()

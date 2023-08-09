@@ -18,6 +18,7 @@
  */
 package co.elastic.apm.agent.configuration;
 
+import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.util.CustomEnvVariables;
 import org.junit.jupiter.api.Test;
 

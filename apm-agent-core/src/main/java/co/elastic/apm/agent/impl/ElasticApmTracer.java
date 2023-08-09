@@ -25,7 +25,7 @@ import co.elastic.apm.agent.common.util.WildcardMatcher;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MetricsConfiguration;
 import co.elastic.apm.agent.configuration.ServerlessConfiguration;
-import co.elastic.apm.agent.configuration.ServiceInfo;
+import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.configuration.SpanConfiguration;
 import co.elastic.apm.agent.context.ClosableLifecycleListenerAdapter;
 import co.elastic.apm.agent.context.LifecycleListener;
@@ -59,9 +59,6 @@ import co.elastic.apm.agent.tracer.reference.ReferenceCounted;
 import co.elastic.apm.agent.tracer.reference.ReferenceCountedMap;
 import co.elastic.apm.agent.util.DependencyInjectingServiceLoader;
 import co.elastic.apm.agent.util.ExecutorUtils;
-import co.elastic.apm.agent.tracer.Scope;
-import co.elastic.apm.agent.tracer.dispatch.BinaryHeaderGetter;
-import co.elastic.apm.agent.tracer.dispatch.TextHeaderGetter;
 import co.elastic.apm.agent.sdk.internal.util.PrivilegedActionUtils;
 import co.elastic.apm.agent.sdk.internal.util.VersionUtils;
 import org.stagemonitor.configuration.ConfigurationOption;
@@ -96,6 +93,8 @@ public class ElasticApmTracer implements Tracer {
     private static final Map<Class<?>, Class<? extends ConfigurationOptionProvider>> configs = new HashMap<>();
 
     private static volatile boolean classloaderCheckOk = false;
+
+    public static final ServiceInfo AUTO_DETECTED_SERVICE_INFO = ServiceInfo.autoDetect(System.getProperties(), PrivilegedActionUtils.getEnv());
 
     private final ConfigurationRegistry configurationRegistry;
     private final StacktraceConfiguration stacktraceConfiguration;
@@ -982,5 +981,9 @@ public class ElasticApmTracer implements Tracer {
     @Override
     public Set<String> getTraceHeaderNames() {
         return TraceContext.TRACE_TEXTUAL_HEADERS;
+    }
+
+    public ServiceInfo autoDetectedServiceInfo() {
+        return AUTO_DETECTED_SERVICE_INFO;
     }
 }

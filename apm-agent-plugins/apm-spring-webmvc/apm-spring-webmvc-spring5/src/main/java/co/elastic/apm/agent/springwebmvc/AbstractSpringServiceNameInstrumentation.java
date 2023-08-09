@@ -18,7 +18,7 @@
  */
 package co.elastic.apm.agent.springwebmvc;
 
-import co.elastic.apm.agent.configuration.ServiceInfo;
+import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
 import co.elastic.apm.agent.servlet.Constants;
@@ -83,7 +83,7 @@ public abstract class AbstractSpringServiceNameInstrumentation extends ElasticAp
 
             // avoid having two service names for a standalone jar
             // one based on Implementation-Title and one based on spring.application.name
-            if (!ServiceInfo.autoDetected().isMultiServiceContainer()) {
+            if (!ElasticApmTracer.AUTO_DETECTED_SERVICE_INFO.isMultiServiceContainer()) {
                 return;
             }
 
