@@ -18,8 +18,9 @@
  */
 package co.elastic.apm.agent.impl.circuitbreaker;
 
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import co.elastic.apm.agent.util.ExecutorUtils;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -50,10 +51,11 @@ public class CircuitBreaker extends AbstractLifecycleListener {
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) {
+    public void start(ReportingTracer tracer) {
         // failsafe loading of stress monitors in isolation
-        loadGCStressMonitor(tracer);
-        loadSystemCpuStressMonitor(tracer);
+        ElasticApmTracer elasticApmTracer = tracer.require(ElasticApmTracer.class);
+        loadGCStressMonitor(elasticApmTracer);
+        loadSystemCpuStressMonitor(elasticApmTracer);
 
         threadPool.execute(new Runnable() {
             @Override

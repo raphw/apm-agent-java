@@ -33,7 +33,7 @@ import co.elastic.apm.agent.tracer.reporting.ReportWriter;
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.configuration.SpanConfiguration;
 import co.elastic.apm.agent.context.ClosableLifecycleListenerAdapter;
-import co.elastic.apm.agent.context.LifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.LifecycleListener;
 import co.elastic.apm.agent.impl.baggage.Baggage;
 import co.elastic.apm.agent.impl.baggage.W3CBaggagePropagation;
 import co.elastic.apm.agent.impl.error.ErrorCapture;

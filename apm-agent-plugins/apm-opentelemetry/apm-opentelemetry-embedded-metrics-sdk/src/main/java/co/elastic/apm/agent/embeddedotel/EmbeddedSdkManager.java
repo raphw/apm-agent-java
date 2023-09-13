@@ -18,11 +18,12 @@
  */
 package co.elastic.apm.agent.embeddedotel;
 
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.embeddedotel.proxy.ProxyMeterProvider;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
 import io.opentelemetry.sdk.metrics.SdkMeterProviderBuilder;
 
@@ -47,8 +48,8 @@ public class EmbeddedSdkManager extends AbstractLifecycleListener {
     private boolean isShutdown = false;
 
     @Override
-    public synchronized void start(ElasticApmTracer tracer) throws Exception {
-        this.tracer = tracer;
+    public synchronized void start(ReportingTracer tracer) throws Exception {
+        this.tracer = tracer.require(ElasticApmTracer.class);
     }
 
     @Override

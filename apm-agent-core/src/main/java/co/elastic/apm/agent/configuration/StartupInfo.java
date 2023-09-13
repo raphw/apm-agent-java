@@ -19,9 +19,10 @@
 package co.elastic.apm.agent.configuration;
 
 import co.elastic.apm.agent.tracer.configuration.TimeDuration;
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import co.elastic.apm.agent.util.VersionUtils;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
@@ -56,8 +57,8 @@ public class StartupInfo extends AbstractLifecycleListener {
     }
 
     @Override
-    public void init(ElasticApmTracer tracer) {
-        ConfigurationRegistry configurationRegistry = tracer.getConfigurationRegistry();
+    public void init(ReportingTracer tracer) {
+        ConfigurationRegistry configurationRegistry = tracer.require(ElasticApmTracer.class).getConfigurationRegistry();
         logConfiguration(configurationRegistry, logger);
     }
 

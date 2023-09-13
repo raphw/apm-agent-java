@@ -18,12 +18,13 @@
  */
 package co.elastic.apm.agent.configuration;
 
-import co.elastic.apm.agent.context.LifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.LifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.report.ApmServerClient;
 import co.elastic.apm.agent.report.serialize.DslJsonSerializer;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import co.elastic.apm.agent.util.ExecutorUtils;
 import com.dslplatform.json.DslJson;
 import com.dslplatform.json.JsonReader;
@@ -111,17 +112,17 @@ public class ApmServerConfigurationSource extends AbstractConfigurationSource im
     }
 
     @Override
-    public void init(ElasticApmTracer tracer) throws Exception {
+    public void init(ReportingTracer tracer) throws Exception {
         // noop
     }
 
     @Override
-    public void start(final ElasticApmTracer tracer) {
+    public void start(final ReportingTracer tracer) {
         threadPool = ExecutorUtils.createSingleThreadDaemonPool("remote-config-poller", 1);
         threadPool.execute(new Runnable() {
             @Override
             public void run() {
-                pollConfig(tracer.getConfigurationRegistry());
+                pollConfig(tracer.require(ElasticApmTracer.class).getConfigurationRegistry());
             }
         });
     }

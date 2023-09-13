@@ -19,7 +19,7 @@
 package co.elastic.apm.agent.profiler;
 
 import co.elastic.apm.agent.common.util.WildcardMatcher;
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.impl.transaction.Span;
 import co.elastic.apm.agent.impl.transaction.StackFrame;
@@ -34,6 +34,7 @@ import co.elastic.apm.agent.tracer.configuration.CoreConfiguration;
 import co.elastic.apm.agent.tracer.configuration.TimeDuration;
 import co.elastic.apm.agent.tracer.pooling.Allocator;
 import co.elastic.apm.agent.tracer.pooling.ObjectPool;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import com.lmax.disruptor.EventFactory;
 import com.lmax.disruptor.EventPoller;
 import com.lmax.disruptor.EventTranslatorTwoArg;
@@ -697,7 +698,7 @@ public class SamplingProfiler extends AbstractLifecycleListener implements Runna
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) {
+    public void start(ReportingTracer tracer) {
         scheduler.submit(this);
     }
 

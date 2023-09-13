@@ -18,8 +18,7 @@
  */
 package co.elastic.apm.agent.jmx;
 
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.tracer.reporting.DoubleSupplier;
 import co.elastic.apm.agent.tracer.reporting.Labels;
 import co.elastic.apm.agent.tracer.GlobalLocks;
@@ -71,7 +70,7 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) {
+    public void start(ReportingTracer tracer) {
         ConfigurationOption.ChangeListener<List<JmxMetric>> captureJmxListener = new ConfigurationOption.ChangeListener<List<JmxMetric>>() {
             @Override
             public void onChange(ConfigurationOption<?> configurationOption, List<JmxMetric> oldValue, List<JmxMetric> newValue) {

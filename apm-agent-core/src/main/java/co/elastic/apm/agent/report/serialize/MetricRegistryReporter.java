@@ -18,8 +18,9 @@
  */
 package co.elastic.apm.agent.report.serialize;
 
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.reporting.Labels;
 import co.elastic.apm.agent.metrics.MetricRegistry;
@@ -47,7 +48,7 @@ public class MetricRegistryReporter extends AbstractLifecycleListener implements
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) {
+    public void start(ReportingTracer tracer) {
         long intervalMs = tracer.getConfig(ReporterConfiguration.class).getMetricsIntervalMs();
         if (intervalMs > 0) {
             tracer.getSharedSingleThreadedPool().scheduleAtFixedRate(this, intervalMs, intervalMs, TimeUnit.MILLISECONDS);

@@ -18,13 +18,14 @@
  */
 package co.elastic.apm.agent.metrics.builtin;
 
-import co.elastic.apm.agent.context.AbstractLifecycleListener;
+import co.elastic.apm.agent.tracer.reporting.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
 import co.elastic.apm.agent.tracer.reporting.DoubleSupplier;
 import co.elastic.apm.agent.tracer.reporting.Labels;
 import co.elastic.apm.agent.metrics.MetricRegistry;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import org.stagemonitor.util.StringUtils;
 
 import javax.annotation.Nullable;
@@ -213,8 +214,8 @@ public class CGroupMetrics extends AbstractLifecycleListener {
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) {
-        bindTo(tracer.getMetricRegistry());
+    public void start(ReportingTracer tracer) {
+        bindTo(tracer.require(ElasticApmTracer.class).getMetricRegistry());
     }
 
     void bindTo(MetricRegistry metricRegistry) {

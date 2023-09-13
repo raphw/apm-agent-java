@@ -16,17 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.context;
-
-import co.elastic.apm.agent.impl.ElasticApmTracer;
+package co.elastic.apm.agent.tracer.reporting;
 
 public abstract class AbstractLifecycleListener implements LifecycleListener {
     @Override
-    public void init(ElasticApmTracer tracer) throws Exception {
+    public void init(ReportingTracer tracer) throws Exception {
     }
 
     @Override
-    public void start(ElasticApmTracer tracer) throws Exception {
+    public void start(ReportingTracer tracer) throws Exception {
     }
 
     @Override
