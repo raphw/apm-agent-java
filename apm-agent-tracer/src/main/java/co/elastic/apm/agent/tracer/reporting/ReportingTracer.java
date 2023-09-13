@@ -25,6 +25,10 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public interface ReportingTracer extends Tracer {
 
+    void addMetric(String name, Labels labels, DoubleSupplier metric);
+
+    void removeMetric(String name, Labels labels);
+
     ReportWriter newWriter(int maxSize);
 
     void addShutdownHook(Closeable job);

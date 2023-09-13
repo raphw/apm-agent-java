@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.metrics;
+package co.elastic.apm.agent.tracer.reporting;
 
 import co.elastic.apm.agent.tracer.pooling.Recyclable;
 
@@ -31,8 +31,8 @@ import java.util.Objects;
  * However, there are also top-level labels which are not nested under the {@code labels} object,
  * for example {@link #getTransactionName()}, {@link #getTransactionType()}, {@link #getSpanType()} and {@link #getSpanSubType()}.
  * <p>
- * Metrics are structured into multiple {@link MetricSet}s.
- * For each distinct combination of {@link Labels}, there is one {@link MetricSet}.
+ * Metrics are structured into multiple metric sets.
+ * For each distinct combination of {@link Labels}, there is one metric set.
  * </p>
  * <p>
  * Labels allow for {@link CharSequence}s as a value,

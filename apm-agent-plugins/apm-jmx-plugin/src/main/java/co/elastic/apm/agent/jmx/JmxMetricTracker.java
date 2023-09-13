@@ -20,13 +20,13 @@ package co.elastic.apm.agent.jmx;
 
 import co.elastic.apm.agent.context.AbstractLifecycleListener;
 import co.elastic.apm.agent.impl.ElasticApmTracer;
-import co.elastic.apm.agent.metrics.DoubleSupplier;
-import co.elastic.apm.agent.metrics.Labels;
-import co.elastic.apm.agent.metrics.MetricRegistry;
+import co.elastic.apm.agent.tracer.reporting.DoubleSupplier;
+import co.elastic.apm.agent.tracer.reporting.Labels;
 import co.elastic.apm.agent.tracer.GlobalLocks;
 import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
 import co.elastic.apm.agent.sdk.internal.util.PrivilegedActionUtils;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 import org.stagemonitor.configuration.ConfigurationOption;
 
 import javax.annotation.Nullable;
@@ -61,13 +61,13 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
     @Nullable
     private volatile MBeanServer server;
     private final JmxConfiguration jmxConfiguration;
-    private final MetricRegistry metricRegistry;
+    private final ReportingTracer tracer;
     @Nullable
     private volatile NotificationListener listener;
 
-    public JmxMetricTracker(ElasticApmTracer tracer) {
+    public JmxMetricTracker(ReportingTracer tracer) {
         jmxConfiguration = tracer.getConfig(JmxConfiguration.class);
-        metricRegistry = tracer.getMetricRegistry();
+        this.tracer = tracer;
     }
 
     @Override
@@ -176,10 +176,10 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
                 List<JmxMetricRegistration> newRegistrations = compileJmxMetricRegistrations(newValue, platformMBeanServer);
 
                 for (JmxMetricRegistration addedRegistration : removeAll(oldRegistrations, newRegistrations)) {
-                    addedRegistration.register(platformMBeanServer, metricRegistry);
+                    addedRegistration.register(platformMBeanServer, tracer);
                 }
                 for (JmxMetricRegistration deletedRegistration : removeAll(newRegistrations, oldRegistrations)) {
-                    deletedRegistration.unregister(metricRegistry);
+                    deletedRegistration.unregister(tracer);
                 }
 
             }
@@ -279,7 +279,7 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
 
     private void register(List<JmxMetric> jmxMetrics, MBeanServer server) {
         for (JmxMetricRegistration registration : compileJmxMetricRegistrations(jmxMetrics, server)) {
-            registration.register(server, metricRegistry);
+            registration.register(server, tracer);
         }
     }
 
@@ -360,9 +360,9 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
         }
 
 
-        void register(final MBeanServer server, final MetricRegistry metricRegistry) {
+        void register(final MBeanServer server, final ReportingTracer tracer) {
             logger.debug("Registering JMX metric {} {}.{} as metric_name: {} labels: {}", objectName, jmxAttribute, compositeDataKey, metricName, labels);
-            metricRegistry.add(metricName, labels, new DoubleSupplier() {
+            tracer.addMetric(metricName, labels, new DoubleSupplier() {
                 @Override
                 public double get() {
                     try {
@@ -372,7 +372,7 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
                             return ((Number) ((CompositeData) server.getAttribute(objectName, jmxAttribute)).get(compositeDataKey)).doubleValue();
                         }
                     } catch (InstanceNotFoundException | AttributeNotFoundException e) {
-                        unregister(metricRegistry);
+                        unregister(tracer);
                         return Double.NaN;
                     } catch (Exception e) {
                         return Double.NaN;
@@ -381,9 +381,9 @@ public class JmxMetricTracker extends AbstractLifecycleListener {
             });
         }
 
-        void unregister(MetricRegistry metricRegistry) {
+        void unregister(ReportingTracer tracer) {
             logger.debug("Unregistering JMX metric {} {}.{} metric_name: {} labels: {}", objectName, jmxAttribute, compositeDataKey, metricName, labels);
-            metricRegistry.removeGauge(metricName, labels);
+            tracer.removeMetric(metricName, labels);
         }
 
         @Override

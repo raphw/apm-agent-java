@@ -27,6 +27,8 @@ import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MetricsConfiguration;
 import co.elastic.apm.agent.configuration.ServerlessConfiguration;
 import co.elastic.apm.agent.report.serialize.DslJsonReportWriter;
+import co.elastic.apm.agent.tracer.reporting.DoubleSupplier;
+import co.elastic.apm.agent.tracer.reporting.Labels;
 import co.elastic.apm.agent.tracer.reporting.ReportWriter;
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.configuration.SpanConfiguration;
@@ -902,6 +904,16 @@ public class ElasticApmTracer implements Tracer {
 
     public MetricRegistry getMetricRegistry() {
         return metricRegistry;
+    }
+
+    @Override
+    public void addMetric(String name, Labels labels, DoubleSupplier metric) {
+        metricRegistry.add(name, labels, metric);
+    }
+
+    @Override
+    public void removeMetric(String name, Labels labels) {
+        metricRegistry.removeGauge(name, labels);
     }
 
     public List<ServiceInfo> getServiceInfoOverrides() {
