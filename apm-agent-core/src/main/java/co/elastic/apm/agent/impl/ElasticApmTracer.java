@@ -648,6 +648,16 @@ public class ElasticApmTracer implements Tracer {
         return reporter;
     }
 
+    @Override
+    public void log(CharSequence statement) {
+        reporter.reportLog(statement.toString());
+    }
+
+    @Override
+    public void log(byte[] statement) {
+        reporter.reportLog(statement);
+    }
+
     public Sampler getSampler() {
         return sampler;
     }

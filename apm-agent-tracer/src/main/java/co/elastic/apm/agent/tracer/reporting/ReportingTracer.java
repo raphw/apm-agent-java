@@ -29,6 +29,9 @@ public interface ReportingTracer extends Tracer {
 
     void removeMetric(String name, Labels labels);
 
+    void log(CharSequence statement);
+    void log(byte[] statement);
+
     ReportWriter newWriter(int maxSize);
 
     void addShutdownHook(Closeable job);
