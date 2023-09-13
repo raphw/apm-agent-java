@@ -19,7 +19,11 @@
 package co.elastic.apm.agent.micrometer;
 
 import co.elastic.apm.agent.configuration.MetricsConfiguration;
-import com.dslplatform.json.JsonWriter;
+import co.elastic.apm.agent.report.Reporter;
+import co.elastic.apm.agent.report.serialize.DslJsonReportWriter;
+import co.elastic.apm.agent.tracer.reporting.ReportWriter;
+import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
+import com.dslplatform.json.DslJson;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,6 +39,8 @@ import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +49,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MicrometerMeterRegistrySerializerTest {
     static MicrometerMeterRegistrySerializer serializer;
@@ -51,12 +59,17 @@ public class MicrometerMeterRegistrySerializerTest {
     @BeforeAll
     static void setup() {
         MetricsConfiguration config = mock(MetricsConfiguration.class);
-        serializer = new MicrometerMeterRegistrySerializer(config);
+        ReportingTracer tracer = mock(ReportingTracer.class);
+        DslJson<Object> dslJson = new DslJson<>(new DslJson.Settings<>());
+        when(tracer.newWriter(anyInt())).thenAnswer((Answer<ReportWriter>) invocationOnMock -> new DslJsonReportWriter(dslJson.newWriter(
+            invocationOnMock.getArgument(0, Integer.class)),
+            mock(Reporter.class)));
+        serializer = new MicrometerMeterRegistrySerializer(config, tracer);
     }
 
     @Test
     void serializeEmpty() {
-        List<JsonWriter> serialized = serializer.serialize(Collections.emptyMap(), 0);
+        List<?> serialized = serializer.writer(Collections.emptyMap(), 0);
         assertThat(serialized).isEmpty();
     }
 
@@ -104,7 +117,7 @@ public class MicrometerMeterRegistrySerializerTest {
         SimpleMeterRegistry registry = new SimpleMeterRegistry();
         testMeter.addToMeterRegistry(registry);
         testMeter.populateValues();
-        List<JsonWriter> serialized = serializer.serialize(Map.of(testMeter.meter().getId(), testMeter.meter()), 0);
+        List<?> serialized = serializer.writer(Map.of(testMeter.meter().getId(), testMeter.meter()), 0);
         assertThat(serialized.size()).isEqualTo(1);
         JsonNode jsonNode = readJsonString(serialized.get(0).toString());
         testMeter.checkSerialization(jsonNode);
@@ -121,7 +134,7 @@ public class MicrometerMeterRegistrySerializerTest {
         testMeter2.addToMeterRegistry(registry);
         testMeter1.populateValues();
         testMeter2.populateValues();
-        List<JsonWriter> serialized = serializer.serialize(Map.of(
+        List<?> serialized = serializer.writer(Map.of(
             testMeter1.meter().getId(), testMeter1.meter(),
             testMeter2.meter().getId(), testMeter2.meter()
         ), 0);

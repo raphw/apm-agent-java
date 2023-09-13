@@ -16,29 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.micrometer;
+package co.elastic.apm.agent.tracer.reporting;
 
-import co.elastic.apm.agent.sdk.ElasticApmInstrumentation;
-import co.elastic.apm.agent.tracer.GlobalTracer;
 import co.elastic.apm.agent.tracer.Tracer;
-import co.elastic.apm.agent.tracer.reporting.ReportingTracer;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.io.Closeable;
+import java.util.concurrent.ScheduledExecutorService;
 
-public abstract class AbstractMicrometerInstrumentation extends ElasticApmInstrumentation {
+public interface ReportingTracer extends Tracer {
 
-    private static final Tracer tracer = GlobalTracer.get();
+    ReportWriter newWriter(int maxSize);
 
-    static final MicrometerMetricsReporter reporter = new MicrometerMetricsReporter(tracer.require(ReportingTracer.class));
+    void addShutdownHook(Closeable job);
 
-    public Collection<String> getInstrumentationGroupNames() {
-        return Collections.singletonList("micrometer");
-    }
-
-    @Override
-    public boolean includeWhenInstrumentationIsDisabled() {
-        return true;
-    }
-
+    ScheduledExecutorService getSharedSingleThreadedPool();
 }

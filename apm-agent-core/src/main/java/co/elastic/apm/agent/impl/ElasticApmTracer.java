@@ -26,6 +26,8 @@ import co.elastic.apm.agent.configuration.AutoDetectedServiceInfo;
 import co.elastic.apm.agent.configuration.CoreConfiguration;
 import co.elastic.apm.agent.configuration.MetricsConfiguration;
 import co.elastic.apm.agent.configuration.ServerlessConfiguration;
+import co.elastic.apm.agent.report.serialize.DslJsonReportWriter;
+import co.elastic.apm.agent.tracer.reporting.ReportWriter;
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.configuration.SpanConfiguration;
 import co.elastic.apm.agent.context.ClosableLifecycleListenerAdapter;
@@ -62,6 +64,7 @@ import co.elastic.apm.agent.tracer.reference.ReferenceCounted;
 import co.elastic.apm.agent.tracer.reference.ReferenceCountedMap;
 import co.elastic.apm.agent.util.DependencyInjectingServiceLoader;
 import co.elastic.apm.agent.util.ExecutorUtils;
+import com.dslplatform.json.DslJson;
 import org.stagemonitor.configuration.ConfigurationOption;
 import org.stagemonitor.configuration.ConfigurationOptionProvider;
 import org.stagemonitor.configuration.ConfigurationRegistry;
@@ -105,6 +108,8 @@ public class ElasticApmTracer implements Tracer {
     }
 
     private static volatile boolean classloaderCheckOk = false;
+
+    private final DslJson<Object> dslJson = new DslJson<>(new DslJson.Settings<>());
 
     private final ConfigurationRegistry configurationRegistry;
     private final StacktraceConfiguration stacktraceConfiguration;
@@ -646,6 +651,11 @@ public class ElasticApmTracer implements Tracer {
     }
 
     @Override
+    public ReportWriter newWriter(int maxSize) {
+        return new DslJsonReportWriter(dslJson.newWriter(maxSize), reporter);
+    }
+
+    @Override
     public ObjectPoolFactory getObjectPoolFactory() {
         return objectPoolFactory;
     }
@@ -944,10 +954,12 @@ public class ElasticApmTracer implements Tracer {
         return metaDataFuture;
     }
 
+    @Override
     public ScheduledThreadPoolExecutor getSharedSingleThreadedPool() {
         return sharedPool;
     }
 
+    @Override
     public void addShutdownHook(Closeable closeable) {
         lifecycleListeners.add(ClosableLifecycleListenerAdapter.of(closeable));
     }
