@@ -24,6 +24,7 @@ import co.elastic.apm.agent.tracer.metrics.Labels;
 import co.elastic.apm.agent.tracer.pooling.ObjectPoolFactory;
 import co.elastic.apm.agent.tracer.reference.ReferenceCounted;
 import co.elastic.apm.agent.tracer.reference.ReferenceCountedMap;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.tracer.service.Service;
 import com.dslplatform.json.JsonWriter;
 
@@ -65,6 +66,11 @@ public class GlobalTracer implements Tracer {
     @Override
     public boolean isRunning() {
         return tracer.isRunning();
+    }
+
+    @Override
+    public void stop() {
+        tracer.stop();
     }
 
     @Nullable
@@ -131,6 +137,23 @@ public class GlobalTracer implements Tracer {
     @Override
     public <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, @Nullable ClassLoader initiatingClassLoader) {
         return tracer.startChildTransaction(headerCarrier, textHeadersGetter, initiatingClassLoader);
+    }
+
+    @Nullable
+    @Override
+    public <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, Sampler sampler, long epochMicros, @Nullable ClassLoader initiatingClassLoader) {
+        return tracer.startChildTransaction(headerCarrier, textHeadersGetter, sampler, epochMicros, initiatingClassLoader);
+    }
+
+    @Nullable
+    @Override
+    public <T, C> TraceContext startChildContext(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter) {
+        return tracer.startChildContext(headerCarrier, textHeadersGetter);
+    }
+
+    @Override
+    public Sampler getSampler() {
+        return tracer.getSampler();
     }
 
     @Nullable

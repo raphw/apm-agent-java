@@ -16,24 +16,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.impl.sampling;
+package co.elastic.apm.agent.tracer.sampling;
 
-import co.elastic.apm.agent.impl.transaction.Id;
-import co.elastic.apm.agent.impl.transaction.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
+import co.elastic.apm.agent.tracer.Id;
 
 /**
- * A sampler is responsible for determining whether a {@link Transaction} should be sampled.
+ * A sampler is responsible for determining whether a {@link co.elastic.apm.agent.tracer.Transaction} should be sampled.
  * <p>
  * In contrast other tracing systems,
  * in Elastic APM,
- * non-sampled {@link Transaction}s do get reported to the APM server.
+ * non-sampled {@link co.elastic.apm.agent.tracer.Transaction}s do get reported to the APM server.
  * However,
  * to keep the size at a minimum,
- * the reported {@link Transaction} only contains the transaction name,
+ * the reported {@link co.elastic.apm.agent.tracer.Transaction} only contains the transaction name,
  * the duration and the id.
  * Also,
- * {@link Span}s of non sampled {@link Transaction}s are not reported.
+ * {@link co.elastic.apm.agent.tracer.Span}s of non sampled {@link co.elastic.apm.agent.tracer.Transaction}s are not reported.
  * </p>
  */
 public interface Sampler {
@@ -50,15 +48,4 @@ public interface Sampler {
      * @return current sample rate
      */
     double getSampleRate();
-
-
-    /**
-     * @return sample rate as (constant) header for context propagation
-     *
-     * <p>
-     * While the {@code tracestate} header is not related to sampler itself, putting this here allows to reuse the same
-     * {@link String} instance as long as the sample rate does not change to minimize allocation
-     * </p>
-     */
-    String getTraceStateHeader();
 }

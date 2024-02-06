@@ -35,10 +35,13 @@ public interface AbstractSpan<T extends AbstractSpan<T>> extends ActivateableInS
 
     TraceContext getTraceContext();
 
-
     void end();
 
+    void end(long epochMicros);
+
     T captureException(@Nullable Throwable t);
+
+    T captureException(long epochMicros, @Nullable Throwable t);
 
     @Nullable
     String getType();
@@ -148,9 +151,17 @@ public interface AbstractSpan<T extends AbstractSpan<T>> extends ActivateableInS
      */
     T withOtelAttribute(String key, @Nullable Object value);
 
+    void addLabel(String key, Number value);
+
+    void addLabel(String key, Boolean value);
+
+    void addLabel(String key, String value);
+
     void incrementReferences();
 
     void decrementReferences();
 
+    AbstractSpan<?> startSpan();
 
+    AbstractSpan<?> startSpan(long epochMicros);
 }

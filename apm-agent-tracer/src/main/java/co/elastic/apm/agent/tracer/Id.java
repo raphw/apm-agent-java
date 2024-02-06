@@ -19,7 +19,10 @@
 package co.elastic.apm.agent.tracer;
 
 public interface Id {
+
     boolean isEmpty();
 
     void setToRandomValue();
+
+    long getLeastSignificantBits();
 }

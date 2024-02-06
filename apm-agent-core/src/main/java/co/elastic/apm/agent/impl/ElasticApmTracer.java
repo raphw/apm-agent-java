@@ -40,8 +40,8 @@ import co.elastic.apm.agent.tracer.LifecycleListener;
 import co.elastic.apm.agent.impl.baggage.Baggage;
 import co.elastic.apm.agent.impl.baggage.W3CBaggagePropagation;
 import co.elastic.apm.agent.impl.error.ErrorCapture;
-import co.elastic.apm.agent.impl.sampling.ProbabilitySampler;
-import co.elastic.apm.agent.impl.sampling.Sampler;
+import co.elastic.apm.agent.tracer.sampling.ProbabilitySampler;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.impl.stacktrace.StacktraceConfiguration;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.ElasticContext;
@@ -74,7 +74,6 @@ import org.stagemonitor.configuration.ConfigurationOptionProvider;
 import org.stagemonitor.configuration.ConfigurationRegistry;
 
 import javax.annotation.Nullable;
-import java.io.Closeable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -485,6 +484,16 @@ public class ElasticApmTracer implements Tracer {
         return null;
     }
 
+    @Nullable
+    @Override
+    public <T, C> TraceContext startChildContext(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter) {
+        TraceContext childTraceContext = TraceContext.with64BitId(this);
+        if (childTraceContext.asChildOf(headerCarrier, textHeadersGetter)) {
+            return childTraceContext;
+        }
+        return null;
+    }
+
     public ConfigurationRegistry getConfigurationRegistry() {
         return configurationRegistry;
     }
@@ -604,6 +613,7 @@ public class ElasticApmTracer implements Tracer {
         spanLinkPool.recycle(traceContext);
     }
 
+    @Override
     public synchronized void stop() {
         if (tracerState == TracerState.STOPPED) {
             // may happen if explicitly stopped in a unit test and executed again within a shutdown hook
@@ -639,6 +649,7 @@ public class ElasticApmTracer implements Tracer {
         return reporter;
     }
 
+    @Override
     public Sampler getSampler() {
         return sampler;
     }

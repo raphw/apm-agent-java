@@ -509,18 +509,21 @@ public abstract class AbstractSpan<T extends AbstractSpan<T>> extends AbstractRe
         return captureExceptionAndGetErrorId(getTraceContext().getClock().getEpochMicros(), t);
     }
 
+    @Override
     public void addLabel(String key, String value) {
         if (isSampled()) {
             getContext().addLabel(key, value);
         }
     }
 
+    @Override
     public void addLabel(String key, Number value) {
         if (isSampled()) {
             getContext().addLabel(key, value);
         }
     }
 
+    @Override
     public void addLabel(String key, Boolean value) {
         if (isSampled()) {
             getContext().addLabel(key, value);
@@ -760,5 +763,21 @@ public abstract class AbstractSpan<T extends AbstractSpan<T>> extends AbstractRe
     @Override
     public <T, C> boolean addLink(HeaderGetter<T, C> headerGetter, @Nullable C carrier) {
         return addSpanLink(headerGetter, carrier);
+    }
+
+    @Override
+    public T captureException(long epochMicros, @Nullable Throwable t) {
+        captureExceptionAndGetErrorId(epochMicros, t);
+        return thiz();
+    }
+
+    @Override
+    public AbstractSpan<?> startSpan() {
+        return tracer.startSpan(TraceContext.fromParent(), this, baggage);
+    }
+
+    @Override
+    public AbstractSpan<?> startSpan(long epochMicros) {
+        return tracer.startSpan(TraceContext.fromParent(), this, baggage, epochMicros);
     }
 }

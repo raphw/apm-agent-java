@@ -26,7 +26,7 @@ import co.elastic.apm.agent.impl.baggage.Baggage;
 import co.elastic.apm.agent.impl.baggage.W3CBaggagePropagation;
 import co.elastic.apm.agent.impl.context.Response;
 import co.elastic.apm.agent.impl.context.TransactionContext;
-import co.elastic.apm.agent.impl.sampling.Sampler;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.tracer.metrics.Labels;
 import co.elastic.apm.agent.metrics.MetricRegistry;
 import co.elastic.apm.agent.metrics.Timer;

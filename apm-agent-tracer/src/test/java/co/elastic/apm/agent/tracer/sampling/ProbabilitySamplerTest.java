@@ -16,14 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package co.elastic.apm.agent.impl.sampling;
+package co.elastic.apm.agent.tracer.sampling;
 
-import co.elastic.apm.agent.impl.transaction.Id;
-import co.elastic.apm.agent.impl.transaction.TraceState;
+import co.elastic.apm.agent.tracer.Id;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+
+import java.nio.ByteBuffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,25 +39,10 @@ class ProbabilitySamplerTest {
         assertThat(sampler.getSampleRate()).isEqualTo(SAMPLING_RATE);
     }
 
-    @ParameterizedTest
-    @CsvSource({"0.0","1.0","0.5"})
-    void headerCaching(double rate) {
-
-        // will indirectly test ConstantSampler as we delegate to it for 0 and 1 values
-        sampler = ProbabilitySampler.of(rate);
-
-        String rateHeader = sampler.getTraceStateHeader();
-        assertThat(rateHeader).isEqualTo(TraceState.getHeaderValue(rate));
-
-        assertThat(rateHeader)
-            .describedAs("sample rate header should return same instance on each call")
-            .isSameAs(sampler.getTraceStateHeader());
-    }
-
     @Test
     void isSampledEmpiricalTest() {
         int sampledTransactions = 0;
-        Id id = Id.new128BitId();
+        Id id = new TestId(16);
         for (int i = 0; i < ITERATIONS; i++) {
             id.setToRandomValue();
             if (sampler.isSampled(id)) {
@@ -71,7 +55,7 @@ class ProbabilitySamplerTest {
     @Test
     void testSamplingUpperBoundary() {
         long upperBound = Long.MAX_VALUE / 2;
-        final Id transactionId = Id.new128BitId();
+        final TestId transactionId = new TestId(16);
 
         transactionId.fromLongs((long) 0, upperBound - 1);
         assertThat(ProbabilitySampler.of(0.5).isSampled(transactionId)).isTrue();
@@ -86,7 +70,7 @@ class ProbabilitySamplerTest {
     @Test
     void testSamplingLowerBoundary() {
         long lowerBound = -Long.MAX_VALUE / 2;
-        final Id transactionId = Id.new128BitId();
+        final TestId transactionId = new TestId(16);
 
         transactionId.fromLongs((long) 0, lowerBound + 1);
         assertThat(ProbabilitySampler.of(0.5).isSampled(transactionId)).isTrue();
@@ -96,6 +80,48 @@ class ProbabilitySamplerTest {
 
         transactionId.fromLongs((long) 0, lowerBound - 1);
         assertThat(ProbabilitySampler.of(0.5).isSampled(transactionId)).isFalse();
+    }
+
+    private static class TestId implements Id {
+
+        private final byte[] data;
+
+        private TestId(int idLengthBytes) {
+            data = new byte[idLengthBytes];
+        }
+
+        @Override
+        public boolean isEmpty() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setToRandomValue() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long getLeastSignificantBits() {
+            return readLong(data.length - 8);
+        }
+
+        public long readLong(int offset) {
+            long lsb = 0;
+            for (int i = offset; i < offset + 8; i++) {
+                lsb = (lsb << 8) | (data[i] & 0xff);
+            }
+            return lsb;
+        }
+
+        public void fromLongs(long... values) {
+            if (values.length * Long.BYTES != data.length) {
+                throw new IllegalArgumentException("Invalid number of long values");
+            }
+            final ByteBuffer buffer = ByteBuffer.wrap(data);
+            for (long value : values) {
+                buffer.putLong(value);
+            }
+        }
     }
 
 }

@@ -21,7 +21,7 @@ package co.elastic.apm.agent.impl;
 import co.elastic.apm.agent.tracer.service.ServiceInfo;
 import co.elastic.apm.agent.impl.baggage.Baggage;
 import co.elastic.apm.agent.impl.error.ErrorCapture;
-import co.elastic.apm.agent.impl.sampling.Sampler;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.impl.transaction.AbstractSpan;
 import co.elastic.apm.agent.impl.transaction.ElasticContext;
 import co.elastic.apm.agent.impl.transaction.Span;

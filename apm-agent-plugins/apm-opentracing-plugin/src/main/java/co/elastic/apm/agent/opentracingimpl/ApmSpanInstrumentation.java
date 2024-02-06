@@ -18,10 +18,10 @@
  */
 package co.elastic.apm.agent.opentracingimpl;
 
+import co.elastic.apm.agent.tracer.AbstractSpan;
+import co.elastic.apm.agent.tracer.Span;
+import co.elastic.apm.agent.tracer.Transaction;
 import co.elastic.apm.agent.tracer.util.ResultUtil;
-import co.elastic.apm.agent.impl.transaction.AbstractSpan;
-import co.elastic.apm.agent.impl.transaction.Span;
-import co.elastic.apm.agent.impl.transaction.Transaction;
 import net.bytebuddy.asm.Advice;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.type.TypeDescription;
@@ -31,6 +31,7 @@ import co.elastic.apm.agent.sdk.logging.Logger;
 import co.elastic.apm.agent.sdk.logging.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.net.URI;
 import java.util.Map;
 
 import static co.elastic.apm.agent.tracer.AbstractSpan.PRIORITY_USER_SUPPLIED;
@@ -73,8 +74,8 @@ public abstract class ApmSpanInstrumentation extends OpenTracingBridgeInstrument
 
             public static void doFinishInternal(AbstractSpan<?> abstractSpan, long finishMicros) {
                 abstractSpan.incrementReferences();
-                if (abstractSpan instanceof Transaction) {
-                    Transaction transaction = (Transaction) abstractSpan;
+                if (abstractSpan instanceof Transaction<?>) {
+                    Transaction<?> transaction = (Transaction<?>) abstractSpan;
                     if (transaction.getType() == null) {
                         if (transaction.getContext().getRequest().hasContent()) {
                             transaction.withType(co.elastic.apm.agent.tracer.Transaction.TYPE_REQUEST);
@@ -125,7 +126,7 @@ public abstract class ApmSpanInstrumentation extends OpenTracingBridgeInstrument
                         final Object errorObject = fields.get("error.object");
                         if (errorObject instanceof Throwable) {
                             if (epochTimestampMicros > 0) {
-                                span.captureExceptionAndGetErrorId(epochTimestampMicros, (Throwable) errorObject);
+                                span.captureException(epochTimestampMicros, (Throwable) errorObject);
                             } else {
                                 span.captureException((Throwable) errorObject);
                             }
@@ -152,10 +153,10 @@ public abstract class ApmSpanInstrumentation extends OpenTracingBridgeInstrument
                 if (value == null) {
                     return;
                 }
-                if (abstractSpanObj instanceof Transaction) {
-                    handleTransactionTag((Transaction) abstractSpanObj, key, value);
-                } else if (abstractSpanObj instanceof Span) {
-                    handleSpanTag((Span) abstractSpanObj, key, value);
+                if (abstractSpanObj instanceof Transaction<?>) {
+                    handleTransactionTag((Transaction<?>) abstractSpanObj, key, value);
+                } else if (abstractSpanObj instanceof Span<?>) {
+                    handleSpanTag((Span<?>) abstractSpanObj, key, value);
                 } else {
                     logger.warn("Calling setTag on an already finished span");
                 }
@@ -209,7 +210,7 @@ public abstract class ApmSpanInstrumentation extends OpenTracingBridgeInstrument
                     transaction.withType(co.elastic.apm.agent.tracer.Transaction.TYPE_REQUEST);
                     return true;
                 } else if ("http.url".equals(key)) {
-                    transaction.getContext().getRequest().getUrl().withFull(value.toString());
+                    transaction.getContext().getRequest().getUrl().fillFrom(URI.create(value.toString()));
                     transaction.withType(co.elastic.apm.agent.tracer.Transaction.TYPE_REQUEST);
                     return true;
                 } else if ("sampling.priority".equals(key)) {
@@ -228,14 +229,11 @@ public abstract class ApmSpanInstrumentation extends OpenTracingBridgeInstrument
                 return false;
             }
 
-            private static boolean handleSpecialSpanTag(Span span, String key, Object value) {
+            private static boolean handleSpecialSpanTag(Span<?> span, String key, Object value) {
                 //noinspection IfCanBeSwitch
                 if ("type".equals(key)) {
-                    if (span.getSubtype() == null && span.getAction() == null) {
-                        span.setType(value.toString(), null, null);
-                    } else {
-                        span.withType(value.toString());
-                    }
+                    // TODO: what about "old support"?
+                    span.withType(value.toString());
                     return true;
                 } else if ("subtype".equals(key)) {
                     span.withSubtype(value.toString());

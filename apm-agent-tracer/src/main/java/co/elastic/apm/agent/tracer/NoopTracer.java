@@ -24,6 +24,8 @@ import co.elastic.apm.agent.tracer.metrics.Labels;
 import co.elastic.apm.agent.tracer.pooling.ObjectPoolFactory;
 import co.elastic.apm.agent.tracer.reference.ReferenceCounted;
 import co.elastic.apm.agent.tracer.reference.ReferenceCountedMap;
+import co.elastic.apm.agent.tracer.sampling.ConstantSampler;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.tracer.service.Service;
 import com.dslplatform.json.JsonWriter;
 
@@ -42,6 +44,10 @@ class NoopTracer implements Tracer {
     @Override
     public boolean isRunning() {
         return false;
+    }
+
+    @Override
+    public void stop() {
     }
 
     @Nullable
@@ -68,6 +74,11 @@ class NoopTracer implements Tracer {
     @Override
     public <K, V extends ReferenceCounted> ReferenceCountedMap<K, V> newReferenceCountedMap() {
         throw new IllegalStateException();
+    }
+
+    @Override
+    public Sampler getSampler() {
+        return ConstantSampler.of(false);
     }
 
     @Override
@@ -107,6 +118,18 @@ class NoopTracer implements Tracer {
     @Nullable
     @Override
     public <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, @Nullable ClassLoader initiatingClassLoader) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, Sampler sampler, long epochMicros, @Nullable ClassLoader initiatingClassLoader) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public <T, C> TraceContext startChildContext(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter) {
         return null;
     }
 

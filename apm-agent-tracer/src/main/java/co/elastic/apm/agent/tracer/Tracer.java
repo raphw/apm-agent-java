@@ -24,6 +24,7 @@ import co.elastic.apm.agent.tracer.metrics.Labels;
 import co.elastic.apm.agent.tracer.pooling.ObjectPoolFactory;
 import co.elastic.apm.agent.tracer.reference.ReferenceCounted;
 import co.elastic.apm.agent.tracer.reference.ReferenceCountedMap;
+import co.elastic.apm.agent.tracer.sampling.Sampler;
 import co.elastic.apm.agent.tracer.service.Service;
 import com.dslplatform.json.JsonWriter;
 
@@ -35,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 public interface Tracer extends Flushable {
 
     boolean isRunning();
+
+    void stop();
 
     @Nullable
     <T extends Tracer> T probe(Class<T> type);
@@ -48,6 +51,8 @@ public interface Tracer extends Flushable {
     <K, V extends ReferenceCounted> ReferenceCountedMap<K, V> newReferenceCountedMap();
 
     Set<String> getTraceHeaderNames();
+
+    Sampler getSampler();
 
     ElasticContext<?> currentContext();
 
@@ -83,6 +88,12 @@ public interface Tracer extends Flushable {
      */
     @Nullable
     <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, @Nullable ClassLoader initiatingClassLoader);
+
+    @Nullable
+    <T, C> Transaction<?> startChildTransaction(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter, Sampler sampler, long epochMicros, @Nullable ClassLoader initiatingClassLoader);
+
+    @Nullable
+    <T, C> TraceContext startChildContext(@Nullable C headerCarrier, HeaderGetter<T, C> textHeadersGetter);
 
     @Nullable
     ErrorCapture captureException(@Nullable Throwable e, @Nullable ClassLoader initiatingClassLoader);
